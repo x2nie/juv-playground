@@ -22,3 +22,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Disabling, temporary
+*.*0
+*0/
+
+public/static/*

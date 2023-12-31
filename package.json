@@ -8,12 +8,13 @@
     "build": "tsc && vite build",
     "preview": "vite preview"
   },
+  "dependencies": {
+    "@odoo/owl": "^2.2.7",
+    "fast-xml-parser": "^4.3.2",
+    "sass": "^1.69.6"
+  },
   "devDependencies": {
     "typescript": "^5.2.2",
     "vite": "^5.0.8"
-  },
-  "dependencies": {
-    "@odoo/owl": "^2.2.7",
-    "sass": "^1.69.6"
   }
 }
