@@ -2,8 +2,9 @@
 // import typescriptLogo from './typescript.svg'
 // import viteLogo from '/vite.svg'
 // import { setupCounter } from './counter.ts'
-import { App } from './App.ts'
-import { mount } from '@odoo/owl'
+// import { App } from './ui/App.ts'
+import { Playground } from './ui/playground.js';
+import { loadFile, mount, whenReady } from '@odoo/owl'
 
 // document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
 //   <div>
@@ -24,4 +25,8 @@ import { mount } from '@odoo/owl'
 // `
 
 // setupCounter(document.querySelector<HTMLButtonElement>('#counter')!)
-mount(App, document.body)
+const [templates] = await Promise.all([
+    loadFile("ui-templates.xml"),
+    whenReady()
+]);
+mount(Playground, document.body, {templates})
