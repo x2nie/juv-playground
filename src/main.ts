@@ -3,8 +3,9 @@
 // import viteLogo from '/vite.svg'
 // import { setupCounter } from './counter.ts'
 // import { App } from './ui/App.ts'
+import { Program } from './program.js';
 import { Playground } from './ui/playground.js';
-import { loadFile, mount, whenReady } from '@odoo/owl'
+import { loadFile, mount, reactive, whenReady } from '@odoo/owl'
 
 // document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
 //   <div>
@@ -25,8 +26,17 @@ import { loadFile, mount, whenReady } from '@odoo/owl'
 // `
 
 // setupCounter(document.querySelector<HTMLButtonElement>('#counter')!)
-const [templates] = await Promise.all([
-    loadFile("ui-templates.xml"),
+const [templates,models,palette] = await Promise.all([
+    await loadFile("ui-templates.xml"),
+    await loadFile("static/models.xml"),
+    loadFile("static/resources/palette.xml"),
     whenReady()
 ]);
-mount(Playground, document.body, {templates})
+const env = { program: reactive(new Program(models, palette)) };
+mount(Playground, document.body, {env, templates})
+
+
+
+// console.log(env.program.palette)
+console.log(models)
+console.log(env.program.models)

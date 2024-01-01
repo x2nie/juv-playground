@@ -11,6 +11,8 @@
   "dependencies": {
     "@odoo/owl": "^2.2.7",
     "fast-xml-parser": "^4.3.2",
+    "regl": "^2.1.0",
+    "regl-atmosphere-envmap": "^1.0.5",
     "sass": "^1.69.6"
   },
   "devDependencies": {

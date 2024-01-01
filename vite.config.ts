@@ -13,4 +13,8 @@ export default defineConfig({
     //@ts-ignore
     // XMLLoader.default(),
   ],
+  assetsInclude: [
+    '**/*.vert',
+    '**/*.frag'
+  ],
 })
