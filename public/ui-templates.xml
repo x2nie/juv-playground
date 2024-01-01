@@ -16,7 +16,7 @@
         <div class="menubar">
           <a class="btn run-code flash" t-on-click="runCode" title="Execute this Code">▶ Run</a>
           <select t-on-change="onSampleChange">
-            <option t-foreach="samples" t-as="sample" t-key="sample_index">
+            <option t-foreach="samples" t-as="sample" t-key="sample_index" t-att-value="sample_index">
               <t t-esc="sample.description"/>
             </option>
           </select>
@@ -47,7 +47,7 @@
           <div>🦉 Odoo Web Library 🦉</div>
           <div>v<t t-esc="version"/></div>
           <div class="url"><a href="https://github.com/odoo/owl">https://github.com/odoo/owl</a></div>
-          <div class="note">
+          <div class="note" id="model-canvas">
             <p>
               Note: these examples make use of recent features of Javascript, and require a recent browser to work without a transpilation step! Among other things, it uses class fields and import maps. If you encounter issues, make sure your browser is up to date.
             </p>

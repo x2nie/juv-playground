@@ -38,7 +38,7 @@ export abstract class NodeState<T extends Node = Node> {
 
     constructor(source: T) {
         this.source = source;
-        makeObservable(this);
+        //makeObservable(this);
     }
 
     public static traverse(ip: Interpreter) {
@@ -152,7 +152,7 @@ export class ConvChainState extends NodeState<ConvChainNode> {
         this.sample = new Uint8Array(this.source.sample.length);
         this.sample.set(this.source.sample);
 
-        makeObservable(this);
+        //makeObservable(this);
     }
 
     //* @override
@@ -180,7 +180,7 @@ export class ConvolutionState extends NodeState<ConvolutionNode> {
         super(source);
         this.steps = this.source.steps || -1;
 
-        makeObservable(this);
+        //makeObservable(this);
     }
 
     //* @override
@@ -214,7 +214,7 @@ export class PathState extends NodeState<PathNode> {
         this.on = Helper.nonZeroPositions(source.substrate);
         this.colored = source.value;
 
-        makeObservable(this);
+        //makeObservable(this);
     }
 
     get name(): string {
@@ -245,7 +245,7 @@ export abstract class RuleState<T extends RuleNode> extends NodeState<T> {
         this.searchedState = this.source.visited;
         this.steps = this.source.steps || -1;
 
-        makeObservable(this);
+        //makeObservable(this);
     }
 
     //* @override
@@ -280,7 +280,7 @@ export class ParallelState extends RuleState<ParallelNode> {
 export abstract class WFCState<T extends WFCNode> extends NodeState<T> {
     constructor(source: T) {
         super(source);
-        makeObservable(this);
+        //makeObservable(this);
     }
 
     //* @override

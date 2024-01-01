@@ -38,5 +38,5 @@ mount(Playground, document.body, {env, templates})
 
 
 // console.log(env.program.palette)
-console.log(models)
-console.log(env.program.models)
+// console.log(models)
+// console.log(env.program.models)

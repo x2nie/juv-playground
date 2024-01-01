@@ -23,7 +23,7 @@ export class Grid {
         g.MY = MY;
         g.MZ = MZ;
 
-        const valueString = elem.getAttribute("values")?.replaceAll(" ", "");
+        const valueString = elem.getAttribute("values")?.replace(/ /, "");
         if (!valueString) {
             console.error(elem, "no values specified");
             return null;

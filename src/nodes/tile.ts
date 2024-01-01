@@ -34,7 +34,7 @@ export class TileNode extends WFCNode {
         this.overlap = parseInt(elem.getAttribute("overlap")) || 0;
         this.overlapz = parseInt(elem.getAttribute("overlapz")) || 0;
 
-        const filepath = `resources/tilesets/${this.name}.xml`;
+        const filepath = `/static/resources/tilesets/${this.name}.xml`;
         const root = await Loader.xml(filepath);
         const fullSymmetry = root.getAttribute("fullSymmetry") === "True";
         const eFirstTile = Helper.matchTag(
@@ -45,7 +45,7 @@ export class TileNode extends WFCNode {
             "name"
         )}.vox`;
         const [firstData, S, SY, SZ] = await Loader.vox(
-            `resources/tilesets/${firstFileName}`
+            `/static/resources/tilesets/${firstFileName}`
         );
 
         if (!firstData) {
@@ -109,7 +109,7 @@ export class TileNode extends WFCNode {
             const tilename = etile.getAttribute("name");
             const weight = parseFloat(etile.getAttribute("weight")) || 1;
 
-            const filename = `resources/tilesets/${tilesname}/${tilename}.vox`;
+            const filename = `/static/resources/tilesets/${tilesname}/${tilename}.vox`;
             const [vox] = await Loader.vox(filename);
             if (!vox) {
                 console.error(`Failed to load tile ${filename}`);

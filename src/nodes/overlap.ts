@@ -45,7 +45,7 @@ export class OverlapNode extends WFCNode {
 
         this.name = elem.getAttribute("sample");
         const [bitmap, SMX, SMY] = await Loader.bitmap(
-            `resources/samples/${this.name}.png`
+            `/static/resources/samples/${this.name}.png`
         );
         if (!bitmap) {
             console.error(`Failed to read sample ${this.name}`);

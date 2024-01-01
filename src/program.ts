@@ -178,7 +178,7 @@ export class Model {
         this.renderer.canvas.id = "model-canvas";
 
         this._loadPromise = (async () => {
-            const path = `models/${name}.xml`;
+            const path = `/static/models/${name}.xml`;
             const mdoc = (this.modelDoc = await Loader.xml(path));
 
             if (!mdoc) {

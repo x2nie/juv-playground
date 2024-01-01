@@ -61,7 +61,7 @@ export abstract class Renderer {
     abstract clear(): void;
     abstract dispose(): void;
 
-    constructor() {
-        makeObservable(this);
-    }
+    // constructor() {
+    //     makeObservable(this);
+    // }
 }

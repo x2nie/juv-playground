@@ -28,7 +28,7 @@ export class ConvChainNode extends Node {
         }
 
         const name = elem.getAttribute("sample");
-        const filename = `resources/samples/${name}.png`;
+        const filename = `/static/resources/samples/${name}.png`;
 
         const result = await Loader.bitmap(filename);
 

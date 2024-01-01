@@ -13,6 +13,7 @@ import {
    __info__,
    useEffect,
    onWillStart,
+   useEnv,
 } from "@odoo/owl";
 
 import "./playground.css";
@@ -70,7 +71,7 @@ function makeCodeIframe(js, css, xml) {
 //------------------------------------------------------------------------------
 // SAMPLES
 //------------------------------------------------------------------------------
-import modelsXml from "../assets/models.xml";
+// import modelsXml from "../assets/models.xml";
 const SAMPLES = [
    {
       description: "Components",
@@ -124,27 +125,30 @@ const SAMPLES = [
    },
 ];
 
-function loadSamples() {
+function loadSamples(models) {
    // const result = SAMPLES.map(({ description, folder, code }) => ({
-   const SAMPLES = modelsXml.models;
-   const result = SAMPLES.map((model) => ({
-      description: model.name,
-      code: async () => {
-         const xml = await loadFile(`/static/models/${model.name}.xml`);
-         const js = `var name = '${model.name}';//nojs`;
-         return { xml, js };
-         //   Object.fromEntries(
-         //   await Promise.all(
-         //     // code.map(async (type) => [type, await loadFile(`./samples/${folder}/${folder}.${type}`)])
-         //     [
-         //       async () => ['xml', await loadFile(`/static/models/${model.name}.xml`)],
-         //       ['js',`var name = '${model.name}';//nojs`]
-         //     ]
+   // const SAMPLES = modelsXml.models;
+   const result = models.map((model, index) => {
+      const modelName = model.getAttribute("name");
+      return {
+         description: modelName,
+         code: async () => {
+            const xml = await loadFile(`/static/models/${modelName}.xml`);
+            const js = `var name = '${modelName}';//nojs`;
+            return { xml, js, index };
+            //   Object.fromEntries(
+            //   await Promise.all(
+            //     // code.map(async (type) => [type, await loadFile(`./samples/${folder}/${folder}.${type}`)])
+            //     [
+            //       async () => ['xml', await loadFile(`/static/models/${model.name}.xml`)],
+            //       ['js',`var name = '${model.name}';//nojs`]
+            //     ]
 
-         //   )
-      },
+            //   )
+         },
+      };
       // ),
-   }));
+   });
    const localSample = localStorage.getItem("owl-playground-local-sample");
    if (localSample) {
       const { js, css, xml } = JSON.parse(localSample);
@@ -266,6 +270,9 @@ export class Playground extends Component {
    static template = "Playground";
    static components = { TabbedEditor };
    setup() {
+      this.env = useEnv();
+      this.modelIndex = -1;
+
       this.version = __info__.version;
 
       this.isDirty = false;
@@ -279,7 +286,7 @@ export class Playground extends Component {
          topPanelHeight: null,
       });
 
-      this.samples = loadSamples();
+      this.samples = loadSamples(this.env.program.models);
       if (window.location.hash) {
          try {
             const { js, css, xml } = JSON.parse(
@@ -291,7 +298,7 @@ export class Playground extends Component {
          } catch {}
       }
 
-      onWillStart(async () => {
+      onMounted(async () => {
          if (!this.state.js) {
             this.setSample(await this.samples[0].code());
          }
@@ -320,11 +327,12 @@ export class Playground extends Component {
 
    runCode() {
       this.content.el.innerHTML = "";
-      this.state.displayWelcome = false;
+      // this.state.displayWelcome = false;
 
-      const { js, css, xml } = this.state;
-      const subiframe = makeCodeIframe(js, css, xml);
-      this.content.el.appendChild(subiframe);
+      // const { js, css, xml } = this.state;
+      // const subiframe = makeCodeIframe(js, css, xml);
+      // this.content.el.appendChild(subiframe);
+      this.env.program.instance.start();
    }
 
    shareCode() {
@@ -346,11 +354,13 @@ export class Playground extends Component {
    }
 
    setSample(sample) {
+      console.log('sample.index=', sample.index)
       this.state.js = sample.js;
       this.state.css = sample.css || "";
       this.state.xml = sample.xml || DEFAULT_XML;
       localStorage.removeItem("owl-playground-local-sample");
       this.isDirty = false;
+      this.env.program.load(sample.index);
    }
 
    get leftPaneStyle() {
@@ -362,10 +372,14 @@ export class Playground extends Component {
    }
 
    async onSampleChange(ev) {
+      debugger;
+      this.modelIndex =  Number(ev.target.value)
       this.setSample(
-         await this.samples
-            .find((s) => s.description === ev.target.value)
-            .code()
+         await this.samples[
+            // .find((s) => s.description === ev.target.value)
+            // Number(ev.target.value)
+            this.modelIndex
+         ].code()
       );
    }
 
