@@ -70,7 +70,7 @@ function makeCodeIframe(js, css, xml) {
 //------------------------------------------------------------------------------
 // SAMPLES
 //------------------------------------------------------------------------------
-
+import modelsXml from "../assets/models.xml";
 const SAMPLES = [
   {
     description: "Components",
@@ -125,13 +125,25 @@ const SAMPLES = [
 ]
 
 function loadSamples() {
-  const result = SAMPLES.map(({ description, folder, code }) => ({
-    description,
-    code: async () => Object.fromEntries(
-      await Promise.all(
-        code.map(async (type) => [type, await loadFile(`./samples/${folder}/${folder}.${type}`)])
-      )
-    ),
+  // const result = SAMPLES.map(({ description, folder, code }) => ({
+  const SAMPLES = modelsXml.models
+  const result = SAMPLES.map((model) => ({
+    description: model.name,
+    code: async () => {
+      const xml = await loadFile(`/static/models/${model.name}.xml`);
+      const js = `var name = '${model.name}';//nojs`;
+      return {xml,js}
+    //   Object.fromEntries(
+    //   await Promise.all(
+    //     // code.map(async (type) => [type, await loadFile(`./samples/${folder}/${folder}.${type}`)])
+    //     [
+    //       async () => ['xml', await loadFile(`/static/models/${model.name}.xml`)],
+    //       ['js',`var name = '${model.name}';//nojs`]
+    //     ]
+
+    //   )
+    }
+    // ),
   }));
   const localSample = localStorage.getItem("owl-playground-local-sample");
   if (localSample) {
@@ -165,7 +177,8 @@ class TabbedEditor extends Component {
 
       this.editor.setValue(this.props[this.state.currentTab], -1);
       this.editor.setFontSize("12px");
-      this.editor.setTheme("ace/theme/monokai");
+      // this.editor.setTheme("ace/theme/monokai");
+      this.editor.setTheme("ace/theme/ambiance");
       this.editor.setSession(this.sessions[this.state.currentTab]);
       const tabSize = this.state.currentTab === "xml" ? 2 : 4;
       this.editor.session.setOption("tabSize", tabSize);
