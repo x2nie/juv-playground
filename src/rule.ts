@@ -243,7 +243,7 @@ export class Rule {
 
     public static async load(elem: Element, gin: Grid, gout: Grid) {
         const filepath = (name: string) => {
-            let result = "resources/rules/";
+            let result = "/static/resources/rules/";
             if (gout.folder != null) result += gout.folder + "/";
             result += name;
             result += gin.MZ === 1 ? ".png" : ".vox";

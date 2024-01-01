@@ -144,7 +144,9 @@ body {
   background-color: #1c2128;
   cursor: col-resize;
 }
-
+.separator.vertical:hover{
+  background-color: purple;
+}
 .separator.horizontal {
   height: 20px;
 }
@@ -152,7 +154,7 @@ body {
 /* RIGHT PANE ****************************************/
 .right-pane {
   background-color: bisque;
-  overflow: hidden;
+  overflow: auto;
 }
 
 .right-pane iframe {
@@ -192,3 +194,14 @@ body {
   padding: 5%;
 }
 
+
+#speed {
+  width: 60%;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  transition: bottom 0.25s linear;
+  margin: 0 auto;
+}

@@ -182,7 +182,8 @@ class TabbedEditor extends Component {
          this.editor.setValue(this.props[this.state.currentTab], -1);
          this.editor.setFontSize("12px");
          // this.editor.setTheme("ace/theme/monokai");
-         this.editor.setTheme("ace/theme/ambiance");
+         // this.editor.setTheme("ace/theme/ambiance");
+         this.editor.setTheme("ace/theme/idle_fingers");
          this.editor.setSession(this.sessions[this.state.currentTab]);
          const tabSize = this.state.currentTab === "xml" ? 2 : 4;
          this.editor.session.setOption("tabSize", tabSize);
@@ -372,7 +373,6 @@ export class Playground extends Component {
    }
 
    async onSampleChange(ev) {
-      debugger;
       this.modelIndex =  Number(ev.target.value)
       this.setSample(
          await this.samples[
@@ -381,6 +381,10 @@ export class Playground extends Component {
             this.modelIndex
          ].code()
       );
+   }
+   onSpeedChange(ev) {
+      console.log('speed:', ev.target.valueAsNumber)
+      this.env.program.instance.speed = ev.target.valueAsNumber;
    }
 
    onMouseDown() {

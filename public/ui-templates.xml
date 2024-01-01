@@ -53,6 +53,14 @@
             </p>
           </div>
         </div>
+        <div id="speed">
+          <label style="left: 50%;">
+            <t t-if="env.program.instance" t-out="env.program.instance.speed" />
+          </label>
+          <input id="speed-bar" type="range" 
+            t-on-change="onSpeedChange"
+            min="-100" max="100" step="1" value="0"/>
+          </div>
         <div class="content" t-ref="content"/>
       </div>
   </div>
