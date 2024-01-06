@@ -48,6 +48,9 @@ export class Program {
 
     public meta = new Random();
 
+    //* @observable
+    private _speed = 0;
+
     constructor(modelsXml:string, paletteXml: string) {
         this.loadModels(modelsXml)
         this.loadPalette(paletteXml)
@@ -94,6 +97,22 @@ export class Program {
             this.instance = model;
         // });
         return model;
+    }
+
+    public set speed(n: number) {
+        this._speed = n;
+        if (this.instance) {
+            this.instance.speed = n
+        }
+    }
+
+    //* @computed
+    public get speed() {
+        return this._speed
+        // if (this.instance) {
+        //     return this.instance.speed 
+        // }
+        // return 0
     }
 }
 
@@ -147,6 +166,7 @@ export class Model {
 
     constructor(modelIndex: number, private program: Program) {
         // this.key = key;
+        this.speed = program.speed;
 
         if (!program.palette) {
             console.error("Load palette first before running any model");

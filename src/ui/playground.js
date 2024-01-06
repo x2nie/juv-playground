@@ -272,6 +272,7 @@ export class Playground extends Component {
    static components = { TabbedEditor };
    setup() {
       this.env = useEnv();
+      this.program = useState(this.env.program)
       this.modelIndex = -1;
 
       this.version = __info__.version;
@@ -285,6 +286,7 @@ export class Playground extends Component {
          splitLayout: true,
          leftPaneWidth: Math.ceil(window.innerWidth / 2),
          topPanelHeight: null,
+         speed: 0,
       });
 
       this.samples = loadSamples(this.env.program.models);
@@ -299,7 +301,7 @@ export class Playground extends Component {
          } catch {}
       }
 
-      onMounted(async () => {
+            onMounted(async () => {
          if (!this.state.js) {
             this.setSample(await this.samples[0].code());
          }
@@ -317,6 +319,12 @@ export class Playground extends Component {
             return () => clearInterval(interval);
          },
          () => []
+      );
+      useEffect(
+         (speed) => {
+            this.program.speed = speed
+         },
+         () => [this.state.speed]
       );
 
       this.toggleLayout = debounce(this.toggleLayout, 250, true);
@@ -383,8 +391,16 @@ export class Playground extends Component {
       );
    }
    onSpeedChange(ev) {
-      console.log('speed:', ev.target.valueAsNumber)
-      this.env.program.instance.speed = ev.target.valueAsNumber;
+      // console.log('speed:', ev.target.valueAsNumber)
+      // this.env.program.speed = ev.target.valueAsNumber;
+      this.state.speed = ev.target.valueAsNumber;
+      // console.log('speed.after:', this.state.speed)
+   }
+   speed() {
+      // console.log('plyground.speed=', this.env.program.instance?this.env.program.instance.speed: '~')
+      // return this.env.program.instance?this.env.program.instance.speed: '~'
+      const speed = this.program.speed
+      return speed >= 0 ? `x${speed || 1}` : `${-speed}ms`
    }
 
    onMouseDown() {

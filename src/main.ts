@@ -32,7 +32,8 @@ const [templates,models,palette] = await Promise.all([
     loadFile("static/resources/palette.xml"),
     whenReady()
 ]);
-const env = { program: reactive(new Program(models, palette)) };
+// const env = { program: reactive(new Program(models, palette)) };
+const env = { program: new Program(models, palette) };
 mount(Playground, document.body, {env, templates})
 
 

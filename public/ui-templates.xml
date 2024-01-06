@@ -45,7 +45,7 @@
       <div class="right-pane">
         <div class="welcome" t-if="state.displayWelcome">
           <div>🦉 Odoo Web Library 🦉</div>
-          <div>v<t t-esc="version"/></div>
+          <!-- <div>v<t t-esc="version"/></div> -->
           <div class="url"><a href="https://github.com/odoo/owl">https://github.com/odoo/owl</a></div>
           <div class="note" id="model-canvas">
             <p>
@@ -55,7 +55,8 @@
         </div>
         <div id="speed">
           <label style="left: 50%;">
-            <t t-if="env.program.instance" t-out="env.program.instance.speed" />
+            <!-- <t t-if="env.program.instance" t-out="env.program.instance.speed" /> -->
+            <t t-out="speed()" />
           </label>
           <input id="speed-bar" type="range" 
             t-on-change="onSpeedChange"
