@@ -3,10 +3,10 @@ import createAtmosphereRenderer from "regl-atmosphere-envmap";
 import { PingPongTextures } from "./pingpong";
 import { FramebufferColorDataType, Regl, Texture2D } from "regl";
 
-import SampleVert from "./glsl/sample.vert";
-import SampleFrag from "./glsl/sample.frag";
-import DisplayVert from "./glsl/display.vert";
-import DisplayFrag from "./glsl/display.frag";
+import SampleVert from "./glsl/sample.vert?raw";
+import SampleFrag from "./glsl/sample.frag?raw";
+import DisplayVert from "./glsl/display.vert?raw";
+import DisplayFrag from "./glsl/display.frag?raw";
 import Stage from "./stage";
 import Camera from "./camera";
 

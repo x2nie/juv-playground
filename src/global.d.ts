@@ -4,8 +4,8 @@ declare module "*.vert" {
 }
 
 declare module "*.frag" {
-    const src: string;
-    export default src;
+    const content: string;
+    export default content;
 }
 
 declare module "*.xml" {
