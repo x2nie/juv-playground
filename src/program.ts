@@ -13,6 +13,7 @@ import {
     VoxelPathTracer,
     Renderer,
     P5BasicRenderer,
+    P5EasycamRenderer,
 } from "./render";
 
 import { Helper } from "./helpers/helper";
@@ -35,6 +36,7 @@ const Render3DTypes = {
     isometric: IsometricRenderer,
     voxel: VoxelPathTracer,
     p5basic: P5BasicRenderer,
+    p5easycam: P5EasycamRenderer,
 };
 
 export class Program {
@@ -151,7 +153,8 @@ export class Model {
     private default3DrenderType = /*VoxelPathTracer.supported
         ? "voxel"
         :*/ //"isometric"
-        "p5basic"
+        // "p5basic"
+        "p5easycam"
         ;
     private rendered = 0;
 
