@@ -12,6 +12,7 @@ import {
     IsometricRenderer,
     VoxelPathTracer,
     Renderer,
+    P5BasicRenderer,
 } from "./render";
 
 import { Helper } from "./helpers/helper";
@@ -33,6 +34,7 @@ export interface ProgramParams {
 const Render3DTypes = {
     isometric: IsometricRenderer,
     voxel: VoxelPathTracer,
+    p5basic: P5BasicRenderer,
 };
 
 export class Program {
@@ -148,7 +150,9 @@ export class Model {
 
     private default3DrenderType = /*VoxelPathTracer.supported
         ? "voxel"
-        :*/ "isometric";
+        :*/ //"isometric"
+        "p5basic"
+        ;
     private rendered = 0;
 
     //* @observable
@@ -403,6 +407,7 @@ export class Model {
             this.renderer.setCharacters(chars);
             this.renderer.update(FX, FY, FZ);
             this.renderer.render(state);
+            this.renderer.done();
             this.rendered++;
 
             if (FZ > 1) {
