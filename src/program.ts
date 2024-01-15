@@ -152,9 +152,10 @@ export class Model {
 
     private default3DrenderType = /*VoxelPathTracer.supported
         ? "voxel"
-        :*/ //"isometric"
+        :*/ 
+        "isometric"
         // "p5basic"
-        "p5easycam"
+        // "p5easycam"
         ;
     private rendered = 0;
 
