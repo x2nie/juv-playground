@@ -158,6 +158,7 @@ export class Model {
         // "p5easycam"
         ;
     private rendered = 0;
+    private lastLoop = 0;
 
     //* @observable
     public loading = false;
@@ -298,7 +299,8 @@ export class Model {
     }
 
     //* @action
-    public start(params?: ProgramParams) {
+    public async start(params?: ProgramParams) {
+        console.log('delay:', this._delay)
         if (this._curr) this._curr.throw(new Error("Interrupt"));
         this._curr = null;
         this.output = null;
@@ -351,6 +353,12 @@ export class Model {
         this._seed = this.program.meta.Next();
     }
 
+    private scaleTime(t: number) {
+        if (this._speed > 0) {
+            return t * this._speed;
+        } else return t;
+    }
+
     private loop(once = false, render = true) {
         if (!once && this._paused) return;
 
@@ -378,6 +386,8 @@ export class Model {
         }
 
         let result = this._curr.next();
+        let dt = this.lastLoop ? start - this.lastLoop : 0;
+        this.ip.time += this.scaleTime(dt);
         const bp = checkBreakpoint();
 
         if (!bp && this._speed > 0) {
@@ -385,7 +395,11 @@ export class Model {
                 result = this._curr.next();
                 if (checkBreakpoint()) break;
                 // Cap per frame execution to 20ms/50fps
-                if (performance.now() - start > 20) break;
+                // if (performance.now() - start > 20) break;
+                dt = performance.now() - start;
+                this.ip.time += this.scaleTime(dt);
+                // Cap per frame execution to 20ms/50fps
+                if (dt > 20) break;
             }
         }
 
@@ -401,6 +415,7 @@ export class Model {
 
         const end = performance.now();
         this._timer += end - start;
+        this.lastLoop = end;
 
         if (result.done) {
             this._curr = null;

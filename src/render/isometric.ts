@@ -50,6 +50,7 @@ export class IsometricRenderer extends Renderer {
 
     override update(MX: number, MY: number, MZ: number) {
         if (this.MX === MX && this.MY === MY && this.MZ === MZ) return;
+        console.log(`x:${this.MX} y:${this.MY} z:${this.MZ}`);
 
         this.MX = MX;
         this.MY = MY;

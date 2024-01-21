@@ -53,6 +53,7 @@ export class P5EasycamRenderer extends Renderer {
             easycam.setViewport([0, 0, windowWidth, windowHeight]);
          };
          p5.draw = () => {
+            console.log('draw..')
             //for canvas 1
             p5.background(100);
             p5.lights();
