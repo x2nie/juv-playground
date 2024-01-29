@@ -359,6 +359,54 @@ export class Model {
         } else return t;
     }
 
+    private _result : any = null;
+    private _lastCounter: number = 0;
+    private _drawing = false;
+
+    private draw() {
+        requestAnimationFrame(() => this.draw())
+
+        if(this._lastCounter == this.ip?.counter) return;
+        if(!this._result) return;
+        if(this._drawing) return;
+        
+        this._lastCounter == this.ip?.counter;
+        this._drawing = true;
+        const [state, chars, FX, FY, FZ] = this._result;
+
+        this.ip.onRender();
+        this.renderer.setCharacters(chars);
+        this.renderer.update(FX, FY, FZ);
+        this.renderer.render(state);
+        this.rendered++;
+        
+        this._drawing = false;
+        // requestAnimationFrame(() => this.draw())
+    }
+
+    private loop10(once = false, render = true) {
+        if (!once && this._paused) return;
+        // debugger
+
+        
+        if (!this._curr) this._curr = this.ip?.run(this._seed, this._steps);
+        if (!this._curr) return;
+        
+        let result = this._curr.next();
+        this._result = result.value;
+        
+        requestAnimationFrame(() => this.draw())
+        
+        while (!result.done && !this._paused){
+            for (const { state } of this.nodes) state.sync();
+            result = this._curr.next();
+            if(result && result.value){
+                this._result = result.value;
+                requestAnimationFrame(() => this.draw())
+            }
+        }
+
+    }
     private loop(once = false, render = true) {
         if (!once && this._paused) return;
 
@@ -389,7 +437,7 @@ export class Model {
         let dt = this.lastLoop ? start - this.lastLoop : 0;
         this.ip.time += this.scaleTime(dt);
         const bp = checkBreakpoint();
-
+        
         if (!bp && this._speed > 0) {
             for (let i = 0; i < this._speed; i++) {
                 result = this._curr.next();
@@ -440,19 +488,24 @@ export class Model {
             }
 
             console.log(`Time: ${this._timer.toFixed(2)}ms`);
-            console.log(`Steps(maybe): ${this.rendered} ${state.length}`);
+            console.log(`Steps: ${this.ip.counter} ${state.length}`);
             this.rendered = 0
         } else {
             if (!once)
                 this._delay
                     ? setTimeout(
                         //   () => runInAction(() => this.loop()),
-                          () => this.loop(),
+                          () => {
+                            console.log('loooping.timeout')
+                            this.loop()
+                        },
                           this._delay
                       )
-                    : requestAnimationFrame(() =>
+                    : requestAnimationFrame(() => {
                         //   runInAction(() => this.loop())
+                        console.log('loooping.animation-requested')
                           this.loop()
+                    }
                       );
 
             if (render) {
