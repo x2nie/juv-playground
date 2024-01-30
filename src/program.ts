@@ -496,14 +496,14 @@ export class Model {
                     ? setTimeout(
                         //   () => runInAction(() => this.loop()),
                           () => {
-                            console.log('loooping.timeout')
+                            // console.log('loooping.timeout')
                             this.loop()
                         },
                           this._delay
                       )
                     : requestAnimationFrame(() => {
                         //   runInAction(() => this.loop())
-                        console.log('loooping.animation-requested')
+                        // console.log('loooping.animation-requested')
                           this.loop()
                     }
                       );
