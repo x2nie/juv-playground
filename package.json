@@ -14,10 +14,12 @@
     "p5": "^1.9.0",
     "regl": "^2.1.0",
     "regl-atmosphere-envmap": "^1.0.5",
-    "sass": "^1.69.6"
+    "sass": "^1.69.6",
+    "three": "0.73.1"
   },
   "devDependencies": {
     "@types/p5": "^1.7.6",
+    "@types/three": "^0.161.1",
     "typescript": "^5.2.2",
     "vite": "^5.0.8"
   }

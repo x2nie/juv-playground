@@ -62,6 +62,7 @@
             t-on-change="onSpeedChange"
             min="-100" max="100" step="1" value="0"/>
           </div>
+        <div id="container" />
         <div class="content" t-ref="content"/>
       </div>
   </div>
