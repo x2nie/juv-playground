@@ -1,11 +1,15 @@
 import { Renderer } from "..";
 import { BoolArray, BoolArray2D } from "../../helpers/datastructures";
 import * as THREE from 'three';
+
 // import 'three/examples/js/controls/TrackballControls';
+// import "three/examples/js/controls/OrbitControls.js";
+
 import { Detector } from "./Detector";
 import { GreedyMesh } from "./meshers/greedy";
 import { createTestData } from "./testdata";
 import { MonotoneMesh } from "./meshers/monotone";
+import { OrbitControls } from "./OrbitControls";
 
 export class ThreeRenderer extends Renderer {
     public static readonly BLOCK_SIZE = 6;
@@ -44,6 +48,7 @@ export class ThreeRenderer extends Renderer {
         this.canvas.style.objectFit = "contain";
         if (Detector.webgl) {
             renderer = new THREE.WebGLRenderer({
+                canvas: this.canvas,
                 antialias: true,	// to get smoother output
                 preserveDrawingBuffer: true	// to allow screenshot
             });
@@ -53,7 +58,7 @@ export class ThreeRenderer extends Renderer {
         // renderer.setClearColorHex(0xBBBBBB, 1);
 
         renderer.setSize(window.innerWidth, window.innerHeight);
-        document.getElementById('container').appendChild(renderer.domElement);
+        // document.getElementById('container').appendChild(renderer.domElement);
 
         // add Stats.js - https://github.com/mrdoob/stats.js
         // stats = new Stats();
@@ -61,16 +66,27 @@ export class ThreeRenderer extends Renderer {
         // stats.domElement.style.bottom = '0px';
         // document.body.appendChild(stats.domElement);
 
-        // create a scene
-        scene = new THREE.Scene();
-
+        
+        
+        
         // put a camera in the scene
         camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 1, 10000);
         camera.position.set(0, 0, 40);
+        // createControls() {
+            this.controls = new OrbitControls(camera, this.canvas);
+            this.controls.autoRotate = true;
+            this.controls.enablePan = true;
+            this.controls.enableZoom = true;
+            this.controls.target.set(0, 0, 0);
+        // }
+                // create a scene
+                scene = new THREE.Scene();
         scene.add(camera);
 
         // create a camera contol
-    //    cameraControls = new THREE.TrackballControls(camera, document.getElementById('container'))
+        // cameraControls = new THREE.TrackballControls(camera, document.getElementById('container'))
+    
+
 
         /*
         // transparently support window resize
@@ -203,10 +219,13 @@ export class ThreeRenderer extends Renderer {
         // if (!ctx || !sprite || !colors || !img) return;
         // this.updateMesh()
 
+        this.controls.update();
         const { surfacemesh, wiremesh, renderer} = this;
         surfacemesh.visible = true;
-        // wiremesh.visible = false;
-        wiremesh.visible = true;
+        wiremesh.visible = false;
+        // wiremesh.visible = true;
+        
+        // this.scene.mesh.rotation.y += .001;
         renderer.render(this.scene, this.camera)
 
         
