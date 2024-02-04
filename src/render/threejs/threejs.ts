@@ -9,7 +9,15 @@ import { Detector } from "./Detector";
 import { GreedyMesh } from "./meshers/greedy";
 import { createTestData } from "./testdata";
 import { MonotoneMesh } from "./meshers/monotone";
-import { OrbitControls } from "./OrbitControls";
+// import { OrbitControls } from "./OrbitControls";
+// import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
+import { VoxelWorld } from "./voxelworld";
+
+
+const cellSize = 40;
+
+
 
 export class ThreeRenderer extends Renderer {
     public static readonly BLOCK_SIZE = 6;
@@ -39,13 +47,18 @@ export class ThreeRenderer extends Renderer {
     private surfacemesh: any;
     private wiremesh: any;
     private geometry: any;
+    private controls: any;
+    private world: VoxelWorld;
     
 
     constructor() {
         let renderer,scene,camera,cameraControls;
         super();        
-        this.canvas.style.imageRendering = "auto";
-        this.canvas.style.objectFit = "contain";
+        // this.canvas.style.imageRendering = "auto";
+        // this.canvas.style.objectFit = "contain";
+        this.canvas.style.width = "100%";
+        this.canvas.style.height = "350px";
+        this.canvas.style.display = "block";
         if (Detector.webgl) {
             renderer = new THREE.WebGLRenderer({
                 canvas: this.canvas,
@@ -57,7 +70,7 @@ export class ThreeRenderer extends Renderer {
         }
         // renderer.setClearColorHex(0xBBBBBB, 1);
 
-        renderer.setSize(window.innerWidth, window.innerHeight);
+        // renderer.setSize(window.innerWidth, window.innerHeight);
         // document.getElementById('container').appendChild(renderer.domElement);
 
         // add Stats.js - https://github.com/mrdoob/stats.js
@@ -66,23 +79,44 @@ export class ThreeRenderer extends Renderer {
         // stats.domElement.style.bottom = '0px';
         // document.body.appendChild(stats.domElement);
 
-        
+        this.world = new VoxelWorld( cellSize );
         
         
         // put a camera in the scene
-        camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 1, 10000);
-        camera.position.set(0, 0, 40);
+        const fov = 75;
+        const aspect = 2; // the canvas default
+        const near = 0.1;
+        const far = 1000;
+        // camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 1, 10000);
+        // camera.position.set(0, 0, 40);
+        camera = new THREE.PerspectiveCamera( fov, aspect, near, far );
+        camera.position.set( - cellSize * .3, cellSize * .8, - cellSize * .3 );
         // createControls() {
-            this.controls = new OrbitControls(camera, this.canvas);
-            this.controls.autoRotate = true;
-            this.controls.enablePan = true;
-            this.controls.enableZoom = true;
-            this.controls.target.set(0, 0, 0);
+            const controls = this.controls = new OrbitControls(camera, this.canvas);
+            controls.target.set( cellSize / 2, cellSize / 3, cellSize / 2 );
+	        controls.update();
+            // this.controls.autoRotate = true;
+            // this.controls.enablePan = true;
+            // this.controls.enableZoom = true;
+            // this.controls.target.set(0, 0, 0);
         // }
-                // create a scene
-                scene = new THREE.Scene();
-        scene.add(camera);
+        // create a scene
+        scene = new THREE.Scene();
+        scene.background = new THREE.Color( 'lightblue' );
+        // scene.add(camera);
 
+        function addLight( x, y, z ) {
+
+            const color = 0xFFFFFF;
+            const intensity = 3;
+            const light = new THREE.DirectionalLight( color, intensity );
+            light.position.set( x, y, z );
+            scene.add( light );
+    
+        }
+    
+        addLight( - 1, 2, 4 );
+        addLight( 1, - 1, - 2 );
 
         // on mouse drag, animate!
         this.controls.addEventListener('change', ()=>{
@@ -108,7 +142,7 @@ export class ThreeRenderer extends Renderer {
 
 
         //Initialize dom elements
-        this.testdata = createTestData();
+        // this.testdata = createTestData();
         // var ds = document.getElementById("datasource");
         // for (var id in testdata) {
         //     ds.add(new Option(id, id), null);
@@ -129,7 +163,7 @@ export class ThreeRenderer extends Renderer {
         
         //Update mesh
         this.updateMesh();
-        this.createLights()
+        // this.createLights()
     }
 
     createLights() {
@@ -149,6 +183,48 @@ export class ThreeRenderer extends Renderer {
 
 
     updateMesh() {
+        const {renderer,scene,camera,cameraControls} = this;
+        for ( let y = 0; y < cellSize; ++ y ) {
+
+            for ( let z = 0; z < cellSize; ++ z ) {
+    
+                for ( let x = 0; x < cellSize; ++ x ) {
+    
+                    const height = ( Math.sin( x / cellSize * Math.PI * 2 ) + Math.sin( z / cellSize * Math.PI * 3 ) ) * ( cellSize / 6 ) + ( cellSize / 2 );
+                    if ( y < height ) {
+    
+                        // world.setVoxel( x, y, z, 1 );
+                        this.world.setVoxel( x, y, z, y % 2 +1);
+    
+                    }
+    
+                }
+    
+            }
+    
+        }
+    
+        const { positions, normals, indices } = this.world.generateGeometryDataForCell( 0, 0, 0 );
+        const geometry = new THREE.BufferGeometry();
+        // const material = new THREE.MeshLambertMaterial( { color: 'green' } );
+        const material = new THREE.MeshLambertMaterial( { color: 'ivory' } );
+        // const material = new THREE.MeshNormalMaterial (  );
+        // const material = new THREE.MeshLambertMaterial( { vertexColors:true} );
+    
+        const positionNumComponents = 3;
+        const normalNumComponents = 3;
+        geometry.setAttribute(
+            'position',
+            new THREE.BufferAttribute( new Float32Array( positions ), positionNumComponents ) );
+        geometry.setAttribute(
+            'normal',
+            new THREE.BufferAttribute( new Float32Array( normals ), normalNumComponents ) );
+        geometry.setIndex( indices );
+        const mesh = new THREE.Mesh( geometry, material );
+        scene.add( mesh );
+
+    }
+    updateMesh0() {
         const {renderer,scene,camera,cameraControls} = this;
         let { surfacemesh, wiremesh} = this;
         
@@ -250,17 +326,44 @@ export class ThreeRenderer extends Renderer {
         // this.img = new ImageData(W, H);
     }
 
+    resizeRendererToDisplaySize(  ) {
+        const {renderer} = this
+
+		const canvas = renderer.domElement;
+		const width = canvas.clientWidth;
+		const height = canvas.clientHeight;
+		const needResize = canvas.width !== width || canvas.height !== height;
+		if ( needResize ) {
+
+			renderer.setSize( width, height, false );
+
+		}
+
+		return needResize;
+
+	}
+
     override _render(state: Uint8Array) {
+        const {renderer,scene,camera,cameraControls} = this;
         // const { MX, MY, MZ, visible, hash, ctx, sprite, colors, img } = this;
 
         // if (!ctx || !sprite || !colors || !img) return;
         // this.updateMesh()
 
+        if ( this.resizeRendererToDisplaySize() ) {
+
+			const canvas = renderer.domElement;
+			camera.aspect = canvas.clientWidth / canvas.clientHeight;
+			camera.updateProjectionMatrix();
+
+		}
+
+
         this.controls.update();
-        const { surfacemesh, wiremesh, renderer} = this;
-        surfacemesh.visible = true;
-        wiremesh.visible = false;
-        wiremesh.visible = true;
+        // const { surfacemesh, wiremesh, renderer} = this;
+        // surfacemesh.visible = true;
+        // wiremesh.visible = false;
+        // wiremesh.visible = true;
         
         // this.scene.mesh.rotation.y += .001;
         renderer.render(this.scene, this.camera)

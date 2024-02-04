@@ -15,7 +15,7 @@
     "regl": "^2.1.0",
     "regl-atmosphere-envmap": "^1.0.5",
     "sass": "^1.69.6",
-    "three": "0.73.1"
+    "three": "^0.161.0"
   },
   "devDependencies": {
     "@types/p5": "^1.7.6",
