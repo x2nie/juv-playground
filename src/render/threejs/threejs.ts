@@ -50,7 +50,7 @@ export class ThreeRenderer extends Renderer {
             renderer = new THREE.WebGLRenderer({
                 canvas: this.canvas,
                 antialias: true,	// to get smoother output
-                preserveDrawingBuffer: true	// to allow screenshot
+                // preserveDrawingBuffer: true	// to allow screenshot
             });
         } else {
             renderer = new THREE.CanvasRenderer();
@@ -83,6 +83,12 @@ export class ThreeRenderer extends Renderer {
                 scene = new THREE.Scene();
         scene.add(camera);
 
+
+        // on mouse drag, animate!
+        this.controls.addEventListener('change', ()=>{
+            renderer.render(this.scene, this.camera)
+        });
+
         // create a camera contol
         // cameraControls = new THREE.TrackballControls(camera, document.getElementById('container'))
     
@@ -114,12 +120,31 @@ export class ThreeRenderer extends Renderer {
         // }
         // ms.onchange = updateMesh;
 
+        
+
         // document.getElementById("showfacets").checked = true;
         // document.getElementById("showedges").checked = true;
         Object.assign(this, {}, {renderer,scene,camera,cameraControls})
 
+        
         //Update mesh
         this.updateMesh();
+        this.createLights()
+    }
+
+    createLights() {
+        const intensity = 1;
+
+        const skyColor = 0xB97A20;  // light blue
+        const groundColor = 0xB97A20;  // brownish orange
+        const hemisphereLight = new THREE.HemisphereLight(skyColor, groundColor, intensity);
+        this.scene.add(hemisphereLight);
+
+        const color = 0xFFFFFF;
+        this.directionalLight = new THREE.DirectionalLight(color, intensity);
+        this.directionalLight.position.set(10, 10, 10);
+        this.directionalLight.target.position.set(0, 0, 0);
+        this.scene.add(this.directionalLight);
     }
 
 
@@ -134,7 +159,11 @@ export class ThreeRenderer extends Renderer {
 			var mesher = 
                 MonotoneMesh 
                 // GreedyMesh
-				, data = this.testdata['16 Color Noise']
+				, data = this.testdata[
+                    // '16 Color Noise'
+                    // 'Boss'
+                    "Matt's Example"
+                ]
 				, result = mesher(data.voxels, data.dims);
 			// document.getElementById("vertcount").value = result.vertices.length;
 			// document.getElementById("facecount").value = result.faces.length;
@@ -172,11 +201,19 @@ export class ThreeRenderer extends Renderer {
 
 
 			//Create surface mesh
-			var material = new THREE.MeshBasicMaterial({
-				vertexColors: true
-			});
+
+            const loader = new THREE.TextureLoader();
+            // const texture = loader.load("assets/checker.png");
+            const texture = loader.load( 'https://threejs.org/manual/examples/resources/images/star.png' );
+			// var material = new THREE.MeshBasicMaterial({
+			// 	vertexColors: true
+			// });
+            // const material = new THREE.MeshPhongMaterial( { vertexColors:true,  map: texture  } );
+            const material = new THREE.MeshLambertMaterial( { vertexColors:true,  map: texture  } );
+
 			surfacemesh = this.surfacemesh = new THREE.Mesh(geometry, material);
 			surfacemesh.doubleSided = false;
+
 			var wirematerial = new THREE.MeshBasicMaterial({
 				color: 0xffffff
 				, wireframe: true
@@ -223,7 +260,7 @@ export class ThreeRenderer extends Renderer {
         const { surfacemesh, wiremesh, renderer} = this;
         surfacemesh.visible = true;
         wiremesh.visible = false;
-        // wiremesh.visible = true;
+        wiremesh.visible = true;
         
         // this.scene.mesh.rotation.y += .001;
         renderer.render(this.scene, this.camera)
