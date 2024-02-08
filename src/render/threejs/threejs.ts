@@ -22,10 +22,12 @@ const cellSize = 40;
 export class ThreeRenderer extends Renderer {
     public static readonly BLOCK_SIZE = 6;
     private static _canvas = document.createElement("canvas");
+    // private _canvas;// = document.createElement("canvas");
     // private static _ctx = IsometricRenderer._canvas.getContext("2d");
 
     public override get canvas(): HTMLCanvasElement {
         return ThreeRenderer._canvas;
+        // return this._canvas;
     }
 
 
@@ -41,6 +43,7 @@ export class ThreeRenderer extends Renderer {
     // private img: ImageData;
     private renderer: any;
     private scene: any;
+    private mesh: any;
     private camera: any;
     private cameraControls: any;
     private testdata: any;
@@ -79,7 +82,24 @@ export class ThreeRenderer extends Renderer {
         // stats.domElement.style.bottom = '0px';
         // document.body.appendChild(stats.domElement);
 
-        this.world = new VoxelWorld( cellSize );
+        // this.world = new VoxelWorld( cellSize );
+
+        const tileSize = 16;
+	const tileTextureWidth = 512;
+	const tileTextureHeight = 8;
+	const loader = new THREE.TextureLoader();
+	// const texture = this.texture = loader.load( 'flourish-cc-by-nc-sa.png', ()=>{} );
+	const texture = this.texture = loader.load( 'palette.png', ()=>{} );
+	texture.magFilter = THREE.NearestFilter;
+	texture.minFilter = THREE.NearestFilter;
+	texture.colorSpace = THREE.SRGBColorSpace;
+
+    this.world = new VoxelWorld( {
+		cellSize,
+		tileSize,
+		tileTextureWidth,
+		tileTextureHeight,
+	} );
         
         
         // put a camera in the scene
@@ -108,15 +128,19 @@ export class ThreeRenderer extends Renderer {
         function addLight( x, y, z ) {
 
             const color = 0xFFFFFF;
-            const intensity = 3;
+            // const intensity = 3;
+            const intensity = 1.47;
             const light = new THREE.DirectionalLight( color, intensity );
-            light.position.set( x, y, z );
+            // const light = new THREE.AmbientLight( color, intensity );
+            // light.position.set( x, y, z );
+            const u = 10
+            light.position.set( x*u, y*u, z*u );
             scene.add( light );
     
         }
     
-        addLight( - 1, 2, 4 );
-        addLight( 1, - 1, - 2 );
+        addLight( -1, 1, 4 );
+        addLight( 1, -1, -2 );
 
         // on mouse drag, animate!
         this.controls.addEventListener('change', ()=>{
@@ -160,6 +184,18 @@ export class ThreeRenderer extends Renderer {
         // document.getElementById("showedges").checked = true;
         Object.assign(this, {}, {renderer,scene,camera,cameraControls})
 
+
+        // Grid on the XZ plane
+        const gx = 42;
+        var gridXZ = new THREE.GridHelper(gx, gx, new THREE.Color(0xffffff), new THREE.Color(0x99999999));
+        // gridXZ.geometry.rotateX( Math.PI / 2 );
+        gridXZ.geometry.translate(gx/2 -1, -0.015, gx/2 -1);
+        scene.add(gridXZ);
+
+        // Global X,Y,Z axes
+        var axes = new THREE.AxesHelper( gx* .65 );
+        axes.geometry.translate(gx/2 -1, -0.02, gx/2 -1);
+        scene.add(axes);
         
         //Update mesh
         this.updateMesh();
@@ -194,7 +230,7 @@ export class ThreeRenderer extends Renderer {
                     if ( y < height ) {
     
                         // world.setVoxel( x, y, z, 1 );
-                        this.world.setVoxel( x, y, z, y % 2 +1);
+                        this.world.setVoxel( x, y, z, y % 17 +7);
     
                     }
     
@@ -204,23 +240,34 @@ export class ThreeRenderer extends Renderer {
     
         }
     
-        const { positions, normals, indices } = this.world.generateGeometryDataForCell( 0, 0, 0 );
+        const { positions, normals, uvs, indices } = this.world.generateGeometryDataForCell( 0, 0, 0 );
         const geometry = new THREE.BufferGeometry();
         // const material = new THREE.MeshLambertMaterial( { color: 'green' } );
-        const material = new THREE.MeshLambertMaterial( { color: 'ivory' } );
+        // const material = new THREE.MeshLambertMaterial( { color: 'ivory' } );
         // const material = new THREE.MeshNormalMaterial (  );
         // const material = new THREE.MeshLambertMaterial( { vertexColors:true} );
+        const material = new THREE.MeshLambertMaterial( {
+            map: this.texture,
+            side: THREE.DoubleSide,
+            alphaTest: 0.1,
+            transparent: true,
+        } );
     
         const positionNumComponents = 3;
         const normalNumComponents = 3;
+        const uvNumComponents = 2;
         geometry.setAttribute(
             'position',
             new THREE.BufferAttribute( new Float32Array( positions ), positionNumComponents ) );
         geometry.setAttribute(
             'normal',
             new THREE.BufferAttribute( new Float32Array( normals ), normalNumComponents ) );
+        
+        geometry.setAttribute( 'uv', 
+            new THREE.BufferAttribute( new Float32Array( uvs ), uvNumComponents ) );
+    
         geometry.setIndex( indices );
-        const mesh = new THREE.Mesh( geometry, material );
+        const mesh = this.mesh = new THREE.Mesh( geometry, material );
         scene.add( mesh );
 
     }
@@ -314,6 +361,7 @@ export class ThreeRenderer extends Renderer {
         this.MX = MX;
         this.MY = MY;
         this.MZ = MZ;
+        console.log('pAL:', this.palette)
         // this.visible = new BoolArray(MX * MY * MZ);
         // this.hash = new BoolArray2D(MX + MY + 2 * MZ - 3, MX + MY - 1);
 
@@ -349,6 +397,7 @@ export class ThreeRenderer extends Renderer {
 
         // if (!ctx || !sprite || !colors || !img) return;
         // this.updateMesh()
+        this.updateMesh2(state)
 
         if ( this.resizeRendererToDisplaySize() ) {
 
@@ -367,8 +416,73 @@ export class ThreeRenderer extends Renderer {
         
         // this.scene.mesh.rotation.y += .001;
         renderer.render(this.scene, this.camera)
+    }
 
+    
+    updateMesh2(state: Uint8Array) {
+        const {renderer,scene,camera,cameraControls, mesh} = this;
+        scene.remove(mesh)
+        for ( let z = 0; z < this.MZ; z++ ) {
+            
+            for ( let y = 0; y < this.MY; y++ ) {
+    
+                for ( let x = 0; x < this.MX; x++ ) {
+                    //* const i = x + y * this.MX + z * this.MX * this.MY;
+                    // const i = y +   x * this.MX +      z * this.MX * this.MY;
+                    // const i = x + y * this.MX + z * this.MX * this.MY;
+                    const i = x + z * this.MX + y * this.MX * this.MY;
+    
+                    // const height = ( Math.sin( x / cellSize * Math.PI * 2 ) + Math.sin( z / cellSize * Math.PI * 3 ) ) * ( cellSize / 6 ) + ( cellSize / 2 );
+                    const value = state[i];
+                    if (value !== 0) {
+    
+                    //     // world.setVoxel( x, y, z, 1 );
+                        this.world.setVoxel( x, y, z, value % 17 +1);
+                        
+                    }
+                    else {
+                        this.world.setVoxel( x, y, z, 0);
+                    }
+    
+                }
+    
+            }
+    
+        }
+    
+        const { positions, normals, uvs, indices } = this.world.generateGeometryDataForCell( 0, 0, 0 );
+        const geometry = new THREE.BufferGeometry();
+        // const material = new THREE.MeshLambertMaterial( { color: 'green' } );
+        // const material = new THREE.MeshLambertMaterial( { color: 'ivory' } );
+        // const material = new THREE.MeshNormalMaterial (  );
+        // const material = new THREE.MeshLambertMaterial( { vertexColors:true} );
+        const material = new THREE.MeshLambertMaterial( {
+            map: this.texture,
+            side: THREE.DoubleSide,
+            alphaTest: 0.1,
+            transparent: true,
+        } );
+    
+        const positionNumComponents = 3;
+        const normalNumComponents = 3;
+        const uvNumComponents = 2;
+        geometry.setAttribute(
+            'position',
+            new THREE.BufferAttribute( new Float32Array( positions ), positionNumComponents ) );
+        geometry.setAttribute(
+            'normal',
+            new THREE.BufferAttribute( new Float32Array( normals ), normalNumComponents ) );
         
+        geometry.setAttribute( 'uv', 
+            new THREE.BufferAttribute( new Float32Array( uvs ), uvNumComponents ) );
+    
+        geometry.setIndex( indices );
+        // geometry.rotateX( Math.PI / 2)
+        // geometry.rotateZ( Math.PI / 2)
+        // geometry.rotateY( Math.PI / 2)
+        this.mesh = new THREE.Mesh( geometry, material );
+        scene.add( this.mesh );
+
     }
 
     override clear() {
