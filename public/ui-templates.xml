@@ -45,6 +45,7 @@
       <div class="right-pane">
         <div class="welcome" t-if="state.displayWelcome">
           <div>🦉 Odoo Web Library 🦉</div>
+          <div id="pal" />
           <!-- <div>v<t t-esc="version"/></div> -->
           <div class="url"><a href="https://github.com/odoo/owl">https://github.com/odoo/owl</a></div>
           <div class="note" id="model-canvas">
