@@ -130,7 +130,7 @@ export class ThreeRenderer extends Renderer {
 
             const color = 0xFFFFFF;
             // const intensity = 3;
-            const intensity = 1.47;
+            const intensity = 1.7;
             const light = new THREE.DirectionalLight( color, intensity );
             // const light = new THREE.AmbientLight( color, intensity );
             // light.position.set( x, y, z );
@@ -356,10 +356,13 @@ export class ThreeRenderer extends Renderer {
     }
 
     public updateColors() {
+        // debugger
         super.updateColors()
         // return
         const size = 8;
-        const len = this._chars.length;
+        const colors = this.colors
+        // const len = this._chars.length;
+        const len = colors.length >> 2;
         const canvas = ThreeRenderer._palcanvas;
         canvas.width = len * size
         canvas.height = 1 * size
@@ -368,20 +371,22 @@ export class ThreeRenderer extends Renderer {
         document.getElementById('pal').appendChild(canvas)
         // debugger
         const ctx = canvas.getContext("2d");
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const data = imageData.data;
-        const colors = this.colors
-        for (let i = 0; i < data.length; i ++) {
-            // const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
-            // data[i] = avg; // red
-            // data[i + 1] = avg; // green
-            // data[i + 2] = avg; // blue
-            data[i] = colors[i]
-        }
-        ctx.putImageData(imageData, 0, 0);
+        ctx.fillStyle = 'transparent'
+        ctx.clearRect(0,0, canvas.width, canvas.height)
+        // const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        // const data = imageData.data;
+        // for (let i = 0; i < data.length; i ++) {
+        //     // const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
+        //     // data[i] = avg; // red
+        //     // data[i + 1] = avg; // green
+        //     // data[i + 2] = avg; // blue
+        //     data[i] = colors[i]
+        // }
+        // ctx.putImageData(imageData, 0, 0);
         for (let i = 0; i < len; i ++) {
-            const c = i * 4
-            ctx.fillStyle= `rgba(${colors[c]}, ${colors[c+1]}, ${colors[c+2]}, ${colors[c+3]/255})`
+            const c = i << 2;
+            // ctx.fillStyle= `rgba(${colors[c+0]}, ${colors[c+2]}, ${colors[c+1]}, ${colors[c+3]/255})`
+            ctx.fillStyle= `rgb(${colors[c+0]}, ${colors[c+1]}, ${colors[c+2]})`
             ctx.fillRect(i * size, 0, size, size)
 
         }
@@ -394,6 +399,10 @@ export class ThreeRenderer extends Renderer {
         this.world.tileTextureWidth = len * size
         this.world.tileTextureHeight = 1 * size
         this.world.tileSize = size
+        console.log('pAL:', this.palette)
+        console.log('chars:', this._chars)
+        console.log('cOLror:', this.colors)
+        console.log('clHex:', this.colorHex)
     }
 
     override update(MX: number, MY: number, MZ: number) {
@@ -403,9 +412,6 @@ export class ThreeRenderer extends Renderer {
         this.MX = MX;
         this.MY = MY;
         this.MZ = MZ;
-        console.log('pAL:', this.palette)
-        console.log('chars:', this._chars)
-        console.log('cOLror:', this.colors)
         // this.visible = new BoolArray(MX * MY * MZ);
         // this.hash = new BoolArray2D(MX + MY + 2 * MZ - 3, MX + MY - 1);
 
@@ -482,7 +488,7 @@ export class ThreeRenderer extends Renderer {
     
                     //     // world.setVoxel( x, y, z, 1 );
                         // this.world.setVoxel( x, y, z, value % 17 +1);
-                        this.world.setVoxel( x, y, z, value);
+                        this.world.setVoxel( x, y, z, value+1);
                         
                     }
                     else {

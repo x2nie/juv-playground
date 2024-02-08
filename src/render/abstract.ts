@@ -36,6 +36,7 @@ export abstract class Renderer {
 
     //* @action
     public updateSymbol(k: string, rgba: Uint8ClampedArray) {
+        console.log('updateSyzmobl:', k, rgba)
         this.palette.set(k, rgba);
     }
 
