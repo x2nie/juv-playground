@@ -11,6 +11,7 @@ import { createTestData } from "./testdata";
 import { MonotoneMesh } from "./meshers/monotone";
 // import { OrbitControls } from "./OrbitControls";
 // import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+// @ts-ignore
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { VoxelWorld } from "./voxelworld";
 
@@ -51,7 +52,9 @@ export class ThreeRenderer extends Renderer {
     private surfacemesh: any;
     private wiremesh: any;
     private geometry: any;
+    private directionalLight: any;
     private controls: any;
+    private texture: any;
     private world: VoxelWorld;
     
 
@@ -70,6 +73,7 @@ export class ThreeRenderer extends Renderer {
                 // preserveDrawingBuffer: true	// to allow screenshot
             });
         } else {
+            // @ts-ignore
             renderer = new THREE.CanvasRenderer();
         }
         // renderer.setClearColorHex(0xBBBBBB, 1);
@@ -134,13 +138,13 @@ export class ThreeRenderer extends Renderer {
             const light = new THREE.DirectionalLight( color, intensity );
             // const light = new THREE.AmbientLight( color, intensity );
             // light.position.set( x, y, z );
-            const u = 30
+            const u = 45
             light.position.set( x*u, y*u, z*u );
             scene.add( light );
     
         }
     
-        addLight( -1, 1, 4 );
+        addLight( -1, 4, 4 );
         addLight( 1, -1, -2 );
 
         // on mouse drag, animate!
@@ -272,7 +276,7 @@ export class ThreeRenderer extends Renderer {
         scene.add( mesh );
 
     }
-    updateMesh0() {
+    /*updateMesh0() {
         const {renderer,scene,camera,cameraControls} = this;
         let { surfacemesh, wiremesh} = this;
         
@@ -353,7 +357,7 @@ export class ThreeRenderer extends Renderer {
 			scene.add(wiremesh);
             // Object.assign(this, {}, {geometry,wiremesh, surfacemesh})
         console.log(renderer.info)
-    }
+    }*/
 
     public updateColors() {
         // debugger
@@ -385,8 +389,8 @@ export class ThreeRenderer extends Renderer {
         // ctx.putImageData(imageData, 0, 0);
         for (let i = 0; i < len; i ++) {
             const c = i << 2;
-            // ctx.fillStyle= `rgba(${colors[c+0]}, ${colors[c+2]}, ${colors[c+1]}, ${colors[c+3]/255})`
-            ctx.fillStyle= `rgb(${colors[c+0]}, ${colors[c+1]}, ${colors[c+2]})`
+            ctx.fillStyle= `rgba(${colors[c+0]}, ${colors[c+1]}, ${colors[c+2]}, ${colors[c+3]/255})`
+            // ctx.fillStyle= `rgb(${colors[c+0]}, ${colors[c+1]}, ${colors[c+2]})`
             ctx.fillRect(i * size, 0, size, size)
 
         }
@@ -399,15 +403,15 @@ export class ThreeRenderer extends Renderer {
         this.world.tileTextureWidth = len * size
         this.world.tileTextureHeight = 1 * size
         this.world.tileSize = size
-        console.log('pAL:', this.palette)
-        console.log('chars:', this._chars)
-        console.log('cOLror:', this.colors)
-        console.log('clHex:', this.colorHex)
+        // console.log('pAL:', this.palette)
+        // console.log('chars:', this._chars)
+        // console.log('cOLror:', this.colors)
+        // console.log('clHex:', this.colorHex)
     }
 
     override update(MX: number, MY: number, MZ: number) {
         if (this.MX === MX && this.MY === MY && this.MZ === MZ) return;
-        console.log(`x:${this.MX} y:${this.MY} z:${this.MZ}`);
+        // console.log(`x:${this.MX} y:${this.MY} z:${this.MZ}`);
 
         this.MX = MX;
         this.MY = MY;

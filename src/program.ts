@@ -68,7 +68,7 @@ export class Program {
         this.palette = new Map(
             ecolors.map((e) => [
                 e.getAttribute("symbol").charAt(0),
-                Helper.hex2rgba(e.getAttribute("value")),
+                Helper.hex2rgba(e.getAttribute("value"), Number(e.getAttribute("alpha")||'255')),
             ])
         );
     }
