@@ -120,6 +120,20 @@ export class Program {
         // }
         // return 0
     }
+
+    get running():boolean{
+        if (this.instance) {
+            return this.instance.running
+        } 
+        else return false
+    }
+
+    get paused():boolean{
+        if (this.instance) {
+            return this.instance.paused
+        } 
+        else return false
+    }
 }
 
 export class Model {

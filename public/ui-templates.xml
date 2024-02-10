@@ -43,6 +43,18 @@
       </div>
       <div class="separator vertical" t-on-mousedown="onMouseDown"/>
       <div class="right-pane">
+        <div class="menubar">
+          <!-- <a class="btn run-code flash" t-on-click="runCode" title="Execute this Code">▶ Run</a> -->
+          <!-- <a class="btn flash" t-on-click="exportStandaloneApp" title="Download zip that bundles this app with a tiny python web server"><i class="fas fa-download"></i></a> -->
+          <a class="layout-selector flash" t-on-click="toggleLayout" title="Toggle Layout">⚄</a>
+          <input name="random" type="text"/>
+          <!-- <a class="btn flash share-code" t-on-click="shareCode" title="Copy a link to this playground"><span>Share</span><span class="copied-notification" t-if="state.copied">Copied link to clipboard!</span></a> -->
+          <!-- <a class="" t-if="program.running" t-on-click="toggleLayout" title="Pause"><i className="fa-solid fa-pause"></i> Pause</a> -->
+          <!-- <a class="" t-if="program.paused" t-on-click="toggleLayout" title="Resume"><i className="fa-solid fa-play"></i> Play</a> -->
+          <a class=""  t-on-click="toggleLayout" title="Resume"><i className="fa-solid fa-play"></i> Play</a>
+          <a class="" t-on-click="toggleLayout" title="Pause"><i className="fa-solid fa-pause"></i> Pause</a>
+        </div>
+
         <div class="welcome" t-if="state.displayWelcome">
           <div>🦉 Odoo Web Library 🦉</div>
           <div id="pal" />

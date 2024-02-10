@@ -141,11 +141,13 @@ export class ThreeRenderer extends Renderer {
             const u = 45
             light.position.set( x*u, y*u, z*u );
             scene.add( light );
-    
+            
         }
-    
+        
         addLight( -1, 4, 4 );
         addLight( 1, -1, -2 );
+        const light = new THREE.AmbientLight( 0xffffff, 0.8 );
+        scene.add( light );
 
         // on mouse drag, animate!
         this.controls.addEventListener('change', ()=>{
@@ -513,8 +515,8 @@ export class ThreeRenderer extends Renderer {
         // const material = new THREE.MeshLambertMaterial( { vertexColors:true} );
         const material = new THREE.MeshLambertMaterial( {
             map: this.texture,
-            side: THREE.DoubleSide,
-            // side: THREE.FrontSide,
+            // side: THREE.DoubleSide,
+            side: THREE.FrontSide,
             alphaTest: 0.1,
             transparent: true,
         } );
