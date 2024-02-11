@@ -15,6 +15,7 @@ import {
     P5BasicRenderer,
     P5EasycamRenderer,
     ThreeRenderer,
+    TriangulaionRenderer,
 } from "./render";
 
 import { Helper } from "./helpers/helper";
@@ -38,7 +39,8 @@ const Render3DTypes = {
     voxel: VoxelPathTracer,
     p5basic: P5BasicRenderer,
     p5easycam: P5EasycamRenderer,
-    threejs: ThreeRenderer
+    threejs: ThreeRenderer,
+    triangulation: TriangulaionRenderer,
 };
 
 export class Program {
@@ -172,7 +174,8 @@ export class Model {
         // "isometric"
         // "p5basic"
         // "p5easycam"
-        "threejs"
+        // "threejs"
+        "triangulation"
         ;
     private rendered = 0;
     private lastLoop = 0;
