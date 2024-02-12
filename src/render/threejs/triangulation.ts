@@ -146,7 +146,7 @@ export class TriangulaionRenderer extends Renderer {
     
         addLight( -1, 4, 4 );
         addLight( 1, -1, -2 );
-        const light = new THREE.AmbientLight( 0xffffff, 0.8 );
+        const light = new THREE.AmbientLight( 0xffffff, 2.5 );
         scene.add( light );
 
         // on mouse drag, animate!
@@ -379,7 +379,8 @@ export class TriangulaionRenderer extends Renderer {
             return [colors[c+0], colors[c+1], colors[c+2]]
         }
         // const result = MonotoneMesh(state, [this.MZ, this.MX, this.MY])
-        const result = GreedyMesh(state, [this.MZ, this.MX, this.MY])
+        // const result = GreedyMesh(state, [this.MZ, this.MX, this.MY])
+        const result = GreedyMesh(state, [this.MY, this.MX, this.MZ])
         // console.log(result)
         // console.log('faces:', result.faces.length)
         // console.log('vertices:', result.vertices.length)
@@ -404,6 +405,11 @@ export class TriangulaionRenderer extends Renderer {
             indices.push(q[0], q[2], q[3])
             const [r,g,b] = rgb(q[4])
             pcolors.push(r,g,b)
+            pcolors.push(r,g,b)
+            pcolors.push(r,g,b)
+
+            pcolors.push(r,g,b)
+            // pcolors.push(r,g,b)
             // pcolors.push(r,g,b)
         }
     
