@@ -24,13 +24,16 @@
 
 //Cache buffer internally
 let mask = new Int32Array(4096);
+const tileTextureWidth = 512;
+const tileTextureHeight = 8;
+const tileSize = 16;
 
 export function GreedyMesh(volume, dims) {
   function f(i,j,k) {
     return volume[i + dims[0] * (j + dims[1] * k)];
   }
   //Sweep over 3-axes
-  var vertices = [], faces = [];
+  var vertices = [], faces = [], uvs = [], normals = [];
   for(var d=0; d<3; ++d) {
     var i, j, k, l, w, h
       , u = (d+1)%3
@@ -99,6 +102,12 @@ export function GreedyMesh(volume, dims) {
           vertices.push([x[0]      +dv[0], x[1]      +dv[1], x[2]      +dv[2]]);
           faces.push([vertex_count, vertex_count+1, vertex_count+2, vertex_count+3, c]);
           
+          uvs.push(( c ) * tileSize / tileTextureWidth, 0 );
+          uvs.push(( c ) * tileSize / tileTextureWidth, 0 );
+
+          normals.push(1, 1, 1 );
+          normals.push(1, 1, 1 );
+
           //Zero-out mask
           for(l=0; l<h; ++l)
           for(k=0; k<w; ++k) {
@@ -112,6 +121,6 @@ export function GreedyMesh(volume, dims) {
       }
     }
   }
-  return { vertices:vertices, faces:faces };
+  return { vertices:vertices, faces:faces, uvs, normals };
 }
 

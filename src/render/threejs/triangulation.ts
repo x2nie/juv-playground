@@ -55,7 +55,7 @@ export class TriangulaionRenderer extends Renderer {
     private directionalLight: any;
     private controls: any;
     private texture: any;
-    private world: VoxelWorld;
+    // private world: VoxelWorld;
     
 
     constructor() {
@@ -94,28 +94,29 @@ export class TriangulaionRenderer extends Renderer {
 	const tileTextureHeight = 8;
 	const loader = new THREE.TextureLoader();
 	// const texture = this.texture = loader.load( 'flourish-cc-by-nc-sa.png', ()=>{} );
-	const texture = this.texture = loader.load( 'palette.png', ()=>{} );
-	texture.magFilter = THREE.NearestFilter;
-	texture.minFilter = THREE.NearestFilter;
-	texture.colorSpace = THREE.SRGBColorSpace;
+	// const texture = this.texture = loader.load( 'palette.png', ()=>{} );
+	// texture.magFilter = THREE.NearestFilter;
+	// texture.minFilter = THREE.NearestFilter;
+	// texture.colorSpace = THREE.SRGBColorSpace;
 
-    this.world = new VoxelWorld( {
-		cellSize,
-		tileSize,
-		tileTextureWidth,
-		tileTextureHeight,
-	} );
+    // this.world = new VoxelWorld( {
+	// 	cellSize,
+	// 	tileSize,
+	// 	tileTextureWidth,
+	// 	tileTextureHeight,
+	// } );
         
         
         // put a camera in the scene
         const fov = 75;
         const aspect = 2; // the canvas default
-        const near = 0.1;
-        const far = 1000;
+        const near = 1;
+        const far = 10000;
         // camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 1, 10000);
         // camera.position.set(0, 0, 40);
         camera = new THREE.PerspectiveCamera( fov, aspect, near, far );
         camera.position.set( - cellSize * .3, cellSize * .8, - cellSize * .3 );
+        // camera.position.set( 0,0,0 );
         // createControls() {
             const controls = this.controls = new OrbitControls(camera, this.canvas);
             controls.target.set( cellSize / 2, cellSize / 3, cellSize / 2 );
@@ -128,6 +129,8 @@ export class TriangulaionRenderer extends Renderer {
         // create a scene
         scene = new THREE.Scene();
         scene.background = new THREE.Color( 'lightblue' );
+        // scene.rotation.x = Math.PI / 2;
+        // scene.rotation.z = Math.PI;
         // scene.add(camera);
 
         function addLight( x, y, z ) {
@@ -146,8 +149,29 @@ export class TriangulaionRenderer extends Renderer {
     
         addLight( -1, 4, 4 );
         addLight( 1, -1, -2 );
-        const light = new THREE.AmbientLight( 0xffffff, 2.5 );
-        scene.add( light );
+        // const amlight = new THREE.AmbientLight( 0xffffff, 2.5 );
+        const amlight = new THREE.AmbientLight( 0xffffff, 2 );
+        scene.add( amlight );
+        const plight = new THREE.PointLight(0xffffff, 1000)
+        plight.position.set(-70, 90, 80)
+        scene.add(plight)
+        // const light1 = new THREE.DirectionalLight( 0xffffff, 3 );
+        // light1.position.set( 0, 200, 0 );
+        // scene.add( light1 );
+
+        // const light2 = new THREE.DirectionalLight( 0xffffff, 3 );
+        // light2.position.set( 100, 200, 100 );
+        // scene.add( light2 );
+
+        // const light3 = new THREE.DirectionalLight( 0xffffff, 3 );
+        // light3.position.set( - 100, - 200, - 100 );
+        // scene.add( light3 );
+
+        const sphereGeometry = new THREE.SphereGeometry(0.5)
+        const material = new THREE.MeshStandardMaterial()
+        const sphere = new THREE.Mesh(sphereGeometry, material)
+        // sphere.position.x = 0
+        scene.add(sphere)
 
         // on mouse drag, animate!
         this.controls.addEventListener('change', ()=>{
@@ -268,9 +292,9 @@ export class TriangulaionRenderer extends Renderer {
         texture.needsUpdate = true;
         texture.magFilter = THREE.NearestFilter;
         texture.minFilter = THREE.NearestFilter;
-        this.world.tileTextureWidth = len * size
-        this.world.tileTextureHeight = 1 * size
-        this.world.tileSize = size
+        // this.world.tileTextureWidth = len * size
+        // this.world.tileTextureHeight = 1 * size
+        // this.world.tileSize = size
         // console.log('pAL:', this.palette)
         // console.log('chars:', this._chars)
         // console.log('cOLror:', this.colors)
@@ -342,6 +366,7 @@ export class TriangulaionRenderer extends Renderer {
 
     
     updateMesh2(state: Uint8Array) {
+        state = this.juv2three(state)
         const {renderer,scene,camera,cameraControls, mesh} = this;
         scene.remove(mesh)
         /*for ( let z = 0; z < this.MZ; z++ ) {
@@ -378,9 +403,15 @@ export class TriangulaionRenderer extends Renderer {
             return [colors[c+0]/255, colors[c+1]/255, colors[c+2]/255]
             return [colors[c+0], colors[c+1], colors[c+2]]
         }
+        const rgba = (i:number) => {
+            const c = i << 2;
+            return [colors[c+0]/255, colors[c+1]/255, colors[c+2]/255, colors[c+3]/255]
+            return [colors[c+0], colors[c+1], colors[c+2]]
+        }
         // const result = MonotoneMesh(state, [this.MZ, this.MX, this.MY])
         // const result = GreedyMesh(state, [this.MZ, this.MX, this.MY])
         const result = GreedyMesh(state, [this.MY, this.MX, this.MZ])
+        // const result = GreedyMesh(state, [this.MX, this.MY, this.MY])
         // console.log(result)
         // console.log('faces:', result.faces.length)
         // console.log('vertices:', result.vertices.length)
@@ -403,14 +434,19 @@ export class TriangulaionRenderer extends Renderer {
             const q = faces[i]
             indices.push(q[0], q[1], q[2])
             indices.push(q[0], q[2], q[3])
-            const [r,g,b] = rgb(q[4])
-            pcolors.push(r,g,b)
-            pcolors.push(r,g,b)
-            pcolors.push(r,g,b)
-
-            pcolors.push(r,g,b)
+            // const [r,g,b] = rgb(q[4])
             // pcolors.push(r,g,b)
             // pcolors.push(r,g,b)
+            // pcolors.push(r,g,b)
+            
+            // pcolors.push(r,g,b)
+            // pcolors.push(r,g,b)
+            // pcolors.push(r,g,b)
+            const c = rgba(q[4])
+            pcolors.push(...c)
+            pcolors.push(...c)
+            pcolors.push(...c)
+            pcolors.push(...c)
         }
     
         // const { positions, normals, uvs, indices } = this.world.generateGeometryDataForCell( 0, 0, 0 );
@@ -419,7 +455,7 @@ export class TriangulaionRenderer extends Renderer {
         // const material = new THREE.MeshLambertMaterial( { color: 'ivory' } );
         // const material = new THREE.MeshNormalMaterial (  );
         // const material = new THREE.MeshLambertMaterial( { vertexColors:true} );
-        const material = new THREE.MeshLambertMaterial( {
+        const material0 = new THREE.MeshLambertMaterial( {
             // map: this.texture,
             side: THREE.DoubleSide,
             vertexColors: true,
@@ -428,14 +464,28 @@ export class TriangulaionRenderer extends Renderer {
             transparent: true,
             // color: 0xffffff
         } );
-        var material0 = new THREE.MeshBasicMaterial ({
-            // vertexColors: true, 
-            color: 0xffffff
-            , wireframe: true});
+        // var material0 = new THREE.MeshBasicMaterial ({
+        //     // vertexColors: true, 
+        //     color: 0xffffff
+        //     , wireframe: true});
+            
+        const material = new THREE.MeshStandardMaterial ({
+            // color: 0xffffff,
+            // color: 0x049ef4,
+            // emissive: 0,
+            vertexColors: true,
+            alphaTest: 0.1,
+            transparent: true,
+            // roughness:0.377,
+            roughness:1,
+            metalness:0.2,
+            // visible:true,
+        });
+        // material.needsUpdate = true
     
         const positionNumComponents = 3;
         const normalNumComponents = 3;
-        const colorNumComponents = 3;
+        const colorNumComponents = 4;
         const uvNumComponents = 2;
         geometry.setAttribute(
             'position',
@@ -443,21 +493,52 @@ export class TriangulaionRenderer extends Renderer {
         geometry.setAttribute(
             'color',
             new THREE.BufferAttribute( new Float32Array( pcolors ), colorNumComponents ) );
-        // geometry.setAttribute(
-        //     'normal',
-        //     new THREE.BufferAttribute( new Float32Array( normals ), normalNumComponents ) );
+        geometry.setAttribute(
+            'normal',
+            new THREE.BufferAttribute( new Float32Array( result.normals ), normalNumComponents ) );
         
-        // geometry.setAttribute( 'uv', 
-        //     new THREE.BufferAttribute( new Float32Array( uvs ), uvNumComponents ) );
+        geometry.setAttribute( 'uv', 
+            new THREE.BufferAttribute( new Float32Array( result.uvs ), uvNumComponents ) );
     
         geometry.setIndex( indices );
-        // geometry.rotateX( Math.PI / 2)
+        // geometry.translate(0, 0, this.MZ/2);
+        // geometry.rotateX( Math.PI/2 )
         // geometry.rotateZ( Math.PI / 2)
         // geometry.rotateY( Math.PI / 2)
         // geometry.computeBoundingSphere();
+        
         this.mesh = new THREE.Mesh( geometry, material );
+        // this.mesh.rotation.x = Math.PI / 2;
+        // this.mesh.rotation.z = Math.PI;
+        // scene.rotation.x = Math.PI / 2;
         scene.add( this.mesh );
 
+    }
+
+    juv2three(state: Uint8Array){
+        // const result = new Uint8Array(state.length)
+        const res = []
+        for ( let z = 0; z < this.MZ; z++ ) {
+            
+            for ( let y = 0; y < this.MY; y++ ) {
+    
+                for ( let x = 0; x < this.MX; x++ ) {
+                    //* const i = x + y * this.MX + z * this.MX * this.MY;
+                    // const i = y +   x * this.MX +      z * this.MX * this.MY;
+                    // const i = x + y * this.MX + z * this.MX * this.MY;
+                    const i = x + z * this.MX + y * this.MX * this.MY;
+    
+                    // const height = ( Math.sin( x / cellSize * Math.PI * 2 ) + Math.sin( z / cellSize * Math.PI * 3 ) ) * ( cellSize / 6 ) + ( cellSize / 2 );
+                    // const value = state[i];
+                    res.push(state[i])
+    
+                }
+    
+            }
+    
+        }
+
+        return new Uint8Array(res)
     }
 
     override clear() {
