@@ -231,6 +231,7 @@ export class TriangulaionRenderer extends Renderer {
         //Update mesh
         // this.updateMesh();
         // this.createLights()
+        this.render()
     }
 
     createLights() {
@@ -364,9 +365,36 @@ export class TriangulaionRenderer extends Renderer {
         renderer.render(this.scene, this.camera)
     }
 
+    dev_9(){
+        // this.MX = 3
+        // this.MY = 5
+        this.MZ = 4
+
+        this.MX = 5
+        this.MY = 3
+        const bin = [
+            0,0,0,0,1,
+            1,0,0,0,0,
+            0,0,0,0,1,
+
+            0,3,3,3,3,
+            2,2,2,2,2,
+            2,2,2,2,3,
+
+            4,2,2,2,2,
+            5,2,2,2,2,
+            6,2,2,2,0,
+
+            7,3,3,3,3,
+            8,3,3,3,3,
+            9,3,3,3,0,
+        ]
+        return new Uint8Array(bin)
+    }
     
     updateMesh2(state: Uint8Array) {
-        state = this.juv2three(state)
+        // state = this.juv2three(state)
+        state = this.dev_9()
         const {renderer,scene,camera,cameraControls, mesh} = this;
         scene.remove(mesh)
         /*for ( let z = 0; z < this.MZ; z++ ) {
@@ -410,8 +438,8 @@ export class TriangulaionRenderer extends Renderer {
         }
         // const result = MonotoneMesh(state, [this.MZ, this.MX, this.MY])
         // const result = GreedyMesh(state, [this.MZ, this.MX, this.MY])
-        const result = GreedyMesh(state, [this.MY, this.MX, this.MZ])
-        // const result = GreedyMesh(state, [this.MX, this.MY, this.MY])
+        // const result = GreedyMesh(state, [this.MY, this.MX, this.MZ])
+        const result = GreedyMesh(state, [this.MX, this.MY, this.MZ])
         // console.log(result)
         // console.log('faces:', result.faces.length)
         // console.log('vertices:', result.vertices.length)
