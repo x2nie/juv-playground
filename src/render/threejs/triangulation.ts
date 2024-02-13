@@ -518,25 +518,39 @@ export class TriangulaionRenderer extends Renderer {
     juv2three(state: Uint8Array){
         // const result = new Uint8Array(state.length)
         const res = []
-        for ( let z = 0; z < this.MZ; z++ ) {
-            
-            for ( let y = 0; y < this.MY; y++ ) {
-    
-                for ( let x = 0; x < this.MX; x++ ) {
-                    //* const i = x + y * this.MX + z * this.MX * this.MY;
-                    // const i = y +   x * this.MX +      z * this.MX * this.MY;
-                    // const i = x + y * this.MX + z * this.MX * this.MY;
-                    const i = x + z * this.MX + y * this.MX * this.MY;
-    
-                    // const height = ( Math.sin( x / cellSize * Math.PI * 2 ) + Math.sin( z / cellSize * Math.PI * 3 ) ) * ( cellSize / 6 ) + ( cellSize / 2 );
-                    // const value = state[i];
-                    res.push(state[i])
-    
+        // Mendefinisikan ukuran array
+        var X = this.MX;
+        var Y = this.MY;
+        var Z = this.MZ;
+        // Mengisi array dengan rotasi indeks
+        for (var z = 0; z < Y; z++) {
+            for (var x = 0; x < X; x++) {
+                for (var y = 0; y < Z; y++) {
+                    // Memperhitungkan rotasi indeks
+                    var index = z + y * Y + x * Y * Z;
+                    res.push(state[index]); // Mengisi array dengan indeks yang dirotasi
                 }
-    
             }
-    
         }
+        // for ( let y = 0; y < this.MY; y++ ) {
+            
+        //     for ( let z = 0; z < this.MZ; z++ ) {
+    
+        //         for ( let x = 0; x < this.MX; x++ ) {
+        //             //* const i = x + y * this.MX + z * this.MX * this.MY;
+        //             // const i = y +   x * this.MX +      z * this.MX * this.MY;
+        //             // const i = x + y * this.MX + z * this.MX * this.MY;
+        //             const i = x + z * this.MX + y * this.MZ * this.MY;
+    
+        //             // const height = ( Math.sin( x / cellSize * Math.PI * 2 ) + Math.sin( z / cellSize * Math.PI * 3 ) ) * ( cellSize / 6 ) + ( cellSize / 2 );
+        //             // const value = state[i];
+        //             res.push(state[i])
+    
+        //         }
+    
+        //     }
+    
+        // }
 
         return new Uint8Array(res)
     }

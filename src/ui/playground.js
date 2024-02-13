@@ -403,6 +403,20 @@ export class Playground extends Component {
       return speed >= 0 ? `x${speed || 1}` : `${-speed}ms`
    }
 
+   get seed() {
+      return this.program.seed;
+   }
+   onSeedChange(ev) {
+      // console.log('speed:', ev.target.valueAsNumber)
+      // this.env.program.speed = ev.target.valueAsNumber;
+      this.program.set_seed(ev.target.valueAsNumber);
+      // console.log('speed.after:', this.state.speed)
+   }
+
+  set seed(seed) {
+      this.program.set_seed(seed)
+  }
+
    onMouseDown() {
       const resizer = (ev) => {
          this.state.leftPaneWidth = ev.clientX;

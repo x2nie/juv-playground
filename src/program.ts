@@ -121,6 +121,21 @@ export class Program {
         //     return this.instance.speed 
         // }
         // return 0
+    }    
+    public set seed(n: number) {
+        // this._speed = n;
+        if (this.instance) {
+            this.instance.seed = n
+        }
+    }
+
+    //* @computed
+    public get seed() {
+        // return this._speed
+        if (this.instance) {
+            return this.instance.seed 
+        }
+        return 0
     }
 
     get running():boolean{
@@ -311,6 +326,9 @@ export class Model {
     //* @computed
     public get seed() {
         return this._seed;
+    }
+    public set seed(n: number) {
+        this.set_seed(n);
     }
 
     //* @action
