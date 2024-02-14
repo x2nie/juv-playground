@@ -113,8 +113,8 @@ export class TriangulaionRenderer extends Renderer {
         // put a camera in the scene
         const fov = 75;
         const aspect = 2; // the canvas default
-        const near = 1;
-        const far = 10000;
+        const near = 10;
+        const far = 1000;
         // camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 1, 10000);
         // camera.position.set(0, 0, 40);
         camera = new THREE.PerspectiveCamera( fov, aspect, near, far );
@@ -146,20 +146,26 @@ export class TriangulaionRenderer extends Renderer {
             const light = new THREE.DirectionalLight( color, intensity );
             // const light = new THREE.AmbientLight( color, intensity );
             // light.position.set( x, y, z );
-            const u = 45
+            const u = 54.5
             light.position.set( x*u, y*u, z*u );
             scene.add( light );
     
         }
     
-        addLight( -1, 4, 4 );
-        addLight( 1, -1, -2 );
-        // const amlight = new THREE.AmbientLight( 0xffffff, 2.5 );
+        addLight( -1.5, 1.5, 3 );
+        addLight( 1.5, -1.5, 2 );
+        // // // const amlight = new THREE.AmbientLight( 0xffffff, 2.5 );
         const amlight = new THREE.AmbientLight( 0xffffff, 2 );
         scene.add( amlight );
-        const plight = new THREE.PointLight(0xffffff, 1000)
-        plight.position.set(-70, 90, 80)
-        scene.add(plight)
+        // const plight = new THREE.PointLight(0xffffff, 1000, 0, 2)
+        // plight.position.set(-70, 90, 80)
+        // scene.add(plight)
+        
+        // const hemlight = new THREE.HemisphereLight(0xffffff, 0x888888, 1.5)
+        // // hemlight.rotateX(Math.PI/2)
+        // hemlight.up.set(0,0,1); 
+        // scene.add(hemlight)
+        
         // const light1 = new THREE.DirectionalLight( 0xffffff, 3 );
         // light1.position.set( 0, 200, 0 );
         // scene.add( light1 );
@@ -323,7 +329,7 @@ export class TriangulaionRenderer extends Renderer {
         gridXZ.geometry.rotateX( Math.PI / 2 );
         gridXZ.geometry.translate(MX/2 , MY/2 , -0.015);
         // gridXZ.geometry.translate(0, -0.015, 0);
-        this.scene.add(gridXZ);
+        // this.scene.add(gridXZ);
         
         //? axises
         this.scene.remove(this.axes)
@@ -468,6 +474,7 @@ export class TriangulaionRenderer extends Renderer {
         const faces = result.faces
         const positions = []
         const indices = []
+        const dots = []; //vertices.indices
         const pcolors = []
         for (let i = 0; i < vertices.length; i++) {
             const q = vertices[i]
@@ -479,6 +486,7 @@ export class TriangulaionRenderer extends Renderer {
         }
         for (let i = 0; i < faces.length; i++) {
             const q = faces[i]
+            dots.push(...q)
             indices.push(q[0], q[1], q[2])
             indices.push(q[0], q[2], q[3])
             // const [r,g,b] = rgb(q[4])
@@ -520,6 +528,7 @@ export class TriangulaionRenderer extends Renderer {
             // color: 0xffffff,
             // color: 0x049ef4,
             // emissive: 0,
+            // map: this.texture,
             vertexColors: true,
             alphaTest: 0.1,
             transparent: true,
@@ -544,8 +553,8 @@ export class TriangulaionRenderer extends Renderer {
             'normal',
             new THREE.BufferAttribute( new Float32Array( result.normals ), normalNumComponents ) );
         
-        geometry.setAttribute( 'uv', 
-            new THREE.BufferAttribute( new Float32Array( result.uvs ), uvNumComponents ) );
+        // geometry.setAttribute( 'uv', 
+        //     new THREE.BufferAttribute( new Float32Array( result.uvs ), uvNumComponents ) );
     
         geometry.setIndex( indices );
         // geometry.translate(0, 0, this.MZ/2);
@@ -559,6 +568,21 @@ export class TriangulaionRenderer extends Renderer {
         // this.mesh.rotation.z = Math.PI;
         // scene.rotation.x = Math.PI / 2;
         scene.add( this.mesh );
+
+
+        //? Pyramid edges
+        this.scene.remove(this.wiremesh)
+        var lineGeometry = new THREE.BufferGeometry();
+        lineGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+        lineGeometry.setIndex(dots);
+        var egeo = new THREE.EdgesGeometry( geometry ); 
+        // var egeo = new THREE.WireframeGeometry( geometry ); 
+        // or WireframeGeometry( geometry )
+
+        var edgeMaterial = new THREE.LineBasicMaterial( { color: 0xffffff, transparent: true, opacity: 1 } );
+        this.wiremesh = new THREE.LineSegments(egeo, edgeMaterial);
+        
+        scene.add( this.wiremesh );
 
     }
 

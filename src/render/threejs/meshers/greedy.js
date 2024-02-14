@@ -27,7 +27,7 @@
 let mask = new Int32Array(4096);
 const tileTextureWidth = 512;
 const tileTextureHeight = 8;
-const tileSize = 16;
+const tileSize = 8;
 
 export function GreedyMesh(volume, dims) {
   function f(i,j,k) {
@@ -105,8 +105,8 @@ export function GreedyMesh(volume, dims) {
           vertices.push([x[0]      +dv[0], x[1]      +dv[1], x[2]      +dv[2]]);
           faces.push([vertex_count, vertex_count+1, vertex_count+2, vertex_count+3, c]);
           
-          uvs.push(( c ) * tileSize / tileTextureWidth, 0 );
-          uvs.push(( c ) * tileSize / tileTextureWidth, 0 );
+          uvs.push(( c ) * tileSize , 0 );
+          uvs.push(( c ) * tileSize , 0 );
 
           normals.push(1, 1, 1 );
           normals.push(1, 1, 1 );
