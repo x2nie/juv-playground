@@ -44,17 +44,20 @@ export class TriangulaionRenderer extends Renderer {
     // private sprite: VoxelSprite;
     // private img: ImageData;
     private renderer: any;
-    private scene: any;
+    private scene: THREE.Scene;
     private mesh: any;
-    private camera: any;
+    // private camera: THREE.Camera;
+    private camera: THREE.PerspectiveCamera;
     private cameraControls: any;
     private testdata: any;
     private surfacemesh: any;
     private wiremesh: any;
     private geometry: any;
     private directionalLight: any;
-    private controls: any;
+    private controls: OrbitControls;
     private texture: any;
+    private gridXY: THREE.GridHelper;
+    private axes : THREE.AxesHelper;
     // private world: VoxelWorld;
     
 
@@ -115,12 +118,13 @@ export class TriangulaionRenderer extends Renderer {
         // camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 1, 10000);
         // camera.position.set(0, 0, 40);
         camera = new THREE.PerspectiveCamera( fov, aspect, near, far );
-        camera.position.set( - cellSize * .3, cellSize * .8, - cellSize * .3 );
+        // camera.position.set( - cellSize * .3, cellSize * .8, - cellSize * .3 );
+        camera.position.set( cellSize * .3, cellSize * .8, cellSize * .3 );
         camera.up.set(0,0,1);   //? https://stackoverflow.com/questions/44630265/how-can-i-set-z-up-coordinate-system-in-three-js
         // camera.position.set( 0,0,0 );
         // createControls() {
             const controls = this.controls = new OrbitControls(camera, this.canvas);
-            // controls.target.set( cellSize / 2, cellSize / 3, cellSize / 2 );
+            controls.target.set( cellSize / 2, cellSize / 3, cellSize / 2 );
 	        controls.update();
             // this.controls.autoRotate = true;
             // this.controls.enablePan = true;
@@ -219,15 +223,16 @@ export class TriangulaionRenderer extends Renderer {
 
         // Grid on the XZ plane
         const gx = 42;
-        var gridXZ = new THREE.GridHelper(gx, gx, new THREE.Color(0xffffff), new THREE.Color(0x99999999));
-        gridXZ.geometry.rotateX( Math.PI / 2 );
+        // var gridXZ = new THREE.GridHelper(gx, gx, new THREE.Color(0xffffff), new THREE.Color(0x99999999));
+        // gridXZ.geometry.rotateX( Math.PI / 2 );
         // gridXZ.geometry.translate(gx/2 -1, -0.015, gx/2 -1);
-        scene.add(gridXZ);
+        // // gridXZ.geometry.translate(0, -0.015, 0);
+        // scene.add(gridXZ);
 
         // Global X,Y,Z axes
-        var axes = new THREE.AxesHelper( gx* .65 );
+        // var axes = new THREE.AxesHelper( gx* .65 );
         // axes.geometry.translate(gx/2 -1, -0.02, gx/2 -1);
-        scene.add(axes);
+        // scene.add(axes);
         
         //Update mesh
         // this.updateMesh();
@@ -305,21 +310,34 @@ export class TriangulaionRenderer extends Renderer {
 
     override update(MX: number, MY: number, MZ: number) {
         if (this.MX === MX && this.MY === MY && this.MZ === MZ) return;
-        // console.log(`x:${this.MX} y:${this.MY} z:${this.MZ}`);
-
+        
         this.MX = MX;
         this.MY = MY;
         this.MZ = MZ;
-        // this.visible = new BoolArray(MX * MY * MZ);
-        // this.hash = new BoolArray2D(MX + MY + 2 * MZ - 3, MX + MY - 1);
+        console.log(`x:${this.MX} y:${this.MY} z:${this.MZ}`);
+        
+        const size = Math.max(MX, MY)
+        //? grid
+        this.scene.remove(this.gridXY)
+        var gridXZ = this.gridXY = new THREE.GridHelper(size+2, size+2, new THREE.Color(0xffffff), new THREE.Color(0x99999999));
+        gridXZ.geometry.rotateX( Math.PI / 2 );
+        gridXZ.geometry.translate(MX/2 , MY/2 , -0.015);
+        // gridXZ.geometry.translate(0, -0.015, 0);
+        this.scene.add(gridXZ);
+        
+        //? axises
+        this.scene.remove(this.axes)
+        this.axes = new THREE.AxesHelper( Math.max(MX, MY, MZ)/2+3 );
+        this.axes.geometry.translate(MX/2 , MY/2 , -0.15);
+        // axes.geometry.translate(gx/2 -1, -0.02, gx/2 -1);
+        this.scene.add(this.axes);
 
-        // const FITWIDTH = (MX + MY) * this.sprite.size,
-        //     FITHEIGHT = ~~(((MX + MY) / 2 + MZ) * this.sprite.size);
 
-        // const W = FITWIDTH + 2 * this.sprite.size;
-        // const H = FITHEIGHT + 2 * this.sprite.size;
+        this.camera.position.set( MX * 1.3/2, MY * -1.5/2, MZ * 1.291 );
+        this.camera.rotateZ(Math.PI/2)
 
-        // this.img = new ImageData(W, H);
+        this.controls.target.set( MX / 2, MY / 2, MZ / 3 );        
+        this.controls.update() //controls.update() must be called after any manual changes to the camera's transform
     }
 
     resizeRendererToDisplaySize(  ) {
@@ -395,7 +413,7 @@ export class TriangulaionRenderer extends Renderer {
     
     updateMesh2(state: Uint8Array) {
         // state = this.juv2three(state)
-        state = this.dev_9()
+        // state = this.dev_9()
         const {renderer,scene,camera,cameraControls, mesh} = this;
         scene.remove(mesh)
         /*for ( let z = 0; z < this.MZ; z++ ) {
