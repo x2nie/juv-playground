@@ -224,8 +224,8 @@ export class ThreeRenderer extends Renderer {
         this.scene.add(this.directionalLight);
     }
 
-
     updateMesh() {
+        return
         const {renderer,scene,camera,cameraControls} = this;
         for ( let y = 0; y < cellSize; ++ y ) {
 
@@ -474,8 +474,36 @@ export class ThreeRenderer extends Renderer {
         renderer.render(this.scene, this.camera)
     }
 
-    
+    dev_9(){
+        // this.MX = 3
+        // this.MY = 5
+        this.MZ = 4
+
+        this.MX = 5
+        this.MY = 3
+        const bin = [
+            0,0,0,0,1,
+            1,0,0,0,0,
+            0,0,0,0,1,
+
+            0,3,3,3,3,
+            2,2,2,2,2,
+            2,2,2,2,3,
+
+            4,2,2,2,2,
+            5,2,2,2,2,
+            6,2,2,2,0,
+
+            7,3,3,3,3,
+            8,3,3,3,3,
+            9,3,3,3,0,
+        ]
+        return new Uint8Array(bin)
+    }
+
+
     updateMesh2(state: Uint8Array) {
+        // state = this.dev_9() 
         const {renderer,scene,camera,cameraControls, mesh} = this;
         scene.remove(mesh)
         for ( let z = 0; z < this.MZ; z++ ) {

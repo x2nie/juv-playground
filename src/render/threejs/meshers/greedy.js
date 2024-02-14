@@ -23,6 +23,7 @@
 
 
 //Cache buffer internally
+// let mask = new Int32Array(4096);
 let mask = new Int32Array(4096);
 const tileTextureWidth = 512;
 const tileTextureHeight = 8;
@@ -44,6 +45,7 @@ export function GreedyMesh(volume, dims) {
       mask = new Int32Array(dims[u] * dims[v]);
     }
     q[d] = 1;
+    // debugger
     for(x[d]=-1; x[d]<dims[d]; ) {
       //Compute mask
       var n = 0;
@@ -59,6 +61,7 @@ export function GreedyMesh(volume, dims) {
           mask[n] = -b;
         }
       }
+      // debugger
       //Increment x[d]
       ++x[d];
       //Generate mesh for mask using lexicographic ordering

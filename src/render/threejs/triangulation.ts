@@ -116,10 +116,11 @@ export class TriangulaionRenderer extends Renderer {
         // camera.position.set(0, 0, 40);
         camera = new THREE.PerspectiveCamera( fov, aspect, near, far );
         camera.position.set( - cellSize * .3, cellSize * .8, - cellSize * .3 );
+        camera.up.set(0,0,1);   //? https://stackoverflow.com/questions/44630265/how-can-i-set-z-up-coordinate-system-in-three-js
         // camera.position.set( 0,0,0 );
         // createControls() {
             const controls = this.controls = new OrbitControls(camera, this.canvas);
-            controls.target.set( cellSize / 2, cellSize / 3, cellSize / 2 );
+            // controls.target.set( cellSize / 2, cellSize / 3, cellSize / 2 );
 	        controls.update();
             // this.controls.autoRotate = true;
             // this.controls.enablePan = true;
@@ -219,13 +220,13 @@ export class TriangulaionRenderer extends Renderer {
         // Grid on the XZ plane
         const gx = 42;
         var gridXZ = new THREE.GridHelper(gx, gx, new THREE.Color(0xffffff), new THREE.Color(0x99999999));
-        // gridXZ.geometry.rotateX( Math.PI / 2 );
-        gridXZ.geometry.translate(gx/2 -1, -0.015, gx/2 -1);
+        gridXZ.geometry.rotateX( Math.PI / 2 );
+        // gridXZ.geometry.translate(gx/2 -1, -0.015, gx/2 -1);
         scene.add(gridXZ);
 
         // Global X,Y,Z axes
         var axes = new THREE.AxesHelper( gx* .65 );
-        axes.geometry.translate(gx/2 -1, -0.02, gx/2 -1);
+        // axes.geometry.translate(gx/2 -1, -0.02, gx/2 -1);
         scene.add(axes);
         
         //Update mesh

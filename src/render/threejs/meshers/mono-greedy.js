@@ -31,17 +31,17 @@ function GreedyMesh(volume, dims) {
     // for(var axis=2; axis<5; ++axis) {
 
         var i, j, k, g, w, h, 
-            u = (axis + 1) % 3,
-            v = (axis + 2) % 3,
+            x = (axis + 1) % 3,
+            y = (axis + 2) % 3,
             d = [0, 0, 0],
             q = [0, 0, 0],
-            mask = new Int32Array(dims[u] * dims[v]);
+            mask = new Int32Array(dims[x] * dims[y]);
         q[axis] = 1;
         for (d[axis] = -1; d[axis] < dims[axis];) {
             //Compute mask
             var n = 0;
-            for     (d[v] = 0; d[v] < dims[v]; ++d[v])
-                for (d[u] = 0; d[u] < dims[u]; ++d[u]) {
+            for     (d[y] = 0; d[y] < dims[y]; ++d[y])
+                for (d[x] = 0; d[x] < dims[x]; ++d[x]) {
                     mask[n++] =
                         (0 <= d[axis] ? f(d[0], d[1], d[2]) : false) !=
                         (d[axis] < dims[axis] - 1 ? f(d[0] + q[0], d[1] + q[1], d[2] + q[2]) : false);
@@ -50,16 +50,16 @@ function GreedyMesh(volume, dims) {
             ++d[axis];
             //Generate mesh for mask using lexicographic ordering
             n = 0;
-            for (j = 0; j < dims[v]; ++j)
-                for (i = 0; i < dims[u];) {
+            for (j = 0; j < dims[y]; ++j)
+                for (i = 0; i < dims[x];) {
                     if (mask[n]) {
                         //Compute width
-                        for (w = 1; mask[n + w] && i + w < dims[u]; ++w) {}
+                        for (w = 1; mask[n + w] && i + w < dims[x]; ++w) {}
                         //Compute height (this is slightly awkward
                         var done = false;
-                        for (h = 1; j + h < dims[v]; ++h) {
+                        for (h = 1; j + h < dims[y]; ++h) {
                             for (k = 0; k < w; ++k) {
-                                if (!mask[n + k + h * dims[u]]) {
+                                if (!mask[n + k + h * dims[x]]) {
                                     done = true;
                                     break;
                                 }
@@ -69,10 +69,10 @@ function GreedyMesh(volume, dims) {
                             }
                         }
                         //Add quad
-                        d[u] = i;
-                        d[v] = j;
-                        var du = [0, 0, 0]; du[u] = w;
-                        var dv = [0, 0, 0]; dv[v] = h;
+                        d[x] = i;
+                        d[y] = j;
+                        var du = [0, 0, 0]; du[x] = w;
+                        var dv = [0, 0, 0]; dv[y] = h;
                         quads.push([
                             [d[0],                  d[1],                   d[2]                ],
                             [d[0] + du[0],          d[1] + du[1],           d[2] + du[2]        ],
@@ -82,7 +82,7 @@ function GreedyMesh(volume, dims) {
                         //Zero-out mask
                         for (g = 0; g < h; ++g)
                             for (k = 0; k < w; ++k) {
-                                mask[n + k + g * dims[u]] = false;
+                                mask[n + k + g * dims[x]] = false;
                             }
                         //Increment counters and continue
                         i += w;
